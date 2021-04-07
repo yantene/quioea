@@ -1,6 +1,6 @@
-import React from 'react'
-import { render } from '@testing-library/react'
-import { SWRConfig } from 'swr'
+import React from "react"
+import { render } from "@testing-library/react"
+import { SWRConfig } from "swr"
 
 // eslint-disable-next-line react/prop-types
 const Providers: React.FC = ({ children }) => (
@@ -10,6 +10,6 @@ const Providers: React.FC = ({ children }) => (
 const customRender = (ui: React.ReactElement, options = {}) =>
   render(ui, { wrapper: Providers, ...options })
 
-export * from '@testing-library/react'
+export * from "@testing-library/react"
 
 export { customRender as render }

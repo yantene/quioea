@@ -1,5 +1,5 @@
-import { defineController } from './$relay'
-import { updateTask, deleteTask } from '$/service/tasks'
+import { defineController } from "./$relay"
+import { updateTask, deleteTask } from "$/service/tasks"
 
 export default defineController(() => ({
   patch: async ({ body, params }) => {
@@ -9,5 +9,5 @@ export default defineController(() => ({
   delete: async ({ params }) => {
     await deleteTask(params.taskId)
     return { status: 204 }
-  }
+  },
 }))
