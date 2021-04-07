@@ -1,4 +1,4 @@
-import { defineHooks } from './$relay'
+import { defineHooks } from "./$relay"
 
 export type AdditionalRequest = {
   user: {
@@ -8,5 +8,5 @@ export type AdditionalRequest = {
 
 export default defineHooks(() => ({
   onRequest: (request, reply) =>
-    request.jwtVerify().catch((err) => reply.send(err))
+    request.jwtVerify().catch((err) => reply.send(err)),
 }))

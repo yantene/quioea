@@ -1,12 +1,12 @@
-import { useState, useCallback } from 'react'
-import styles from '~/styles/UserBanner.module.css'
-import { apiClient } from '~/utils/apiClient'
-import type { UserInfo } from '$/types'
-import type { ChangeEvent } from 'react'
+import { useState, useCallback } from "react"
+import styles from "~/styles/UserBanner.module.css"
+import { apiClient } from "~/utils/apiClient"
+import type { UserInfo } from "$/types"
+import type { ChangeEvent } from "react"
 
 const UserBanner = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState("")
   const [userInfo, setUserInfo] = useState({} as UserInfo)
 
   const editIcon = useCallback(
@@ -16,19 +16,19 @@ const UserBanner = () => {
       setUserInfo(
         await apiClient.user.$post({
           headers: { authorization: token },
-          body: { icon: e.target.files[0] }
-        })
+          body: { icon: e.target.files[0] },
+        }),
       )
     },
-    [token]
+    [token],
   )
 
   const login = useCallback(async () => {
-    const id = prompt('Enter the user id (See server/.env)')
-    const pass = prompt('Enter the user pass (See server/.env)')
-    if (!id || !pass) return alert('Login failed')
+    const id = prompt("Enter the user id (See server/.env)")
+    const pass = prompt("Enter the user pass (See server/.env)")
+    if (!id || !pass) return alert("Login failed")
 
-    let newToken = ''
+    let newToken = ""
 
     try {
       newToken = `Bearer ${
@@ -36,17 +36,17 @@ const UserBanner = () => {
       }`
       setToken(newToken)
     } catch (e) {
-      return alert('Login failed')
+      return alert("Login failed")
     }
 
     setUserInfo(
-      await apiClient.user.$get({ headers: { authorization: newToken } })
+      await apiClient.user.$get({ headers: { authorization: newToken } }),
     )
     setIsLoggedIn(true)
   }, [])
 
   const logout = useCallback(() => {
-    setToken('')
+    setToken("")
     setIsLoggedIn(false)
   }, [])
 

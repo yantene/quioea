@@ -1,8 +1,8 @@
-import fastify from 'fastify'
-import controller from '$/api/tasks/controller'
+import fastify from "fastify"
+import controller from "$/api/tasks/controller"
 
-test('dependency injection into controller', async () => {
-  let printedMessage = ''
+test("dependency injection into controller", async () => {
+  let printedMessage = ""
 
   const injectedController = controller.inject((deps) => ({
     getTasks: deps.getTasks.inject({
@@ -10,24 +10,24 @@ test('dependency injection into controller', async () => {
         task: {
           findMany: () =>
             Promise.resolve([
-              { id: 0, label: 'task1', done: false },
-              { id: 1, label: 'task2', done: false },
-              { id: 2, label: 'task3', done: true },
-              { id: 3, label: 'task4', done: true },
-              { id: 4, label: 'task5', done: false }
-            ])
-        }
-      }
+              { id: 0, label: "task1", done: false },
+              { id: 1, label: "task2", done: false },
+              { id: 2, label: "task3", done: true },
+              { id: 3, label: "task4", done: true },
+              { id: 4, label: "task5", done: false },
+            ]),
+        },
+      },
     }),
     print: (text: string) => {
       printedMessage = text
-    }
+    },
   }))(fastify())
 
   const limit = 3
-  const message = 'test message'
+  const message = "test message"
   const res = await injectedController.get({
-    query: { limit, message }
+    query: { limit, message },
   })
 
   expect(res.body).toHaveLength(limit)

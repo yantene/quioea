@@ -1,18 +1,18 @@
-import Head from 'next/head'
-import { useCallback, useState } from 'react'
-import useAspidaSWR from '@aspida/swr'
-import styles from '~/styles/Home.module.css'
-import { apiClient } from '~/utils/apiClient'
-import UserBanner from '~/components/UserBanner'
-import type { Task } from '$prisma/client'
-import type { FormEvent, ChangeEvent } from 'react'
+import Head from "next/head"
+import { useCallback, useState } from "react"
+import useAspidaSWR from "@aspida/swr"
+import styles from "~/styles/Home.module.css"
+import { apiClient } from "~/utils/apiClient"
+import UserBanner from "~/components/UserBanner"
+import type { Task } from "$prisma/client"
+import type { FormEvent, ChangeEvent } from "react"
 
 const Home = () => {
   const { data: tasks, error, revalidate } = useAspidaSWR(apiClient.tasks)
-  const [label, setLabel] = useState('')
+  const [label, setLabel] = useState("")
   const inputLabel = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setLabel(e.target.value),
-    []
+    [],
   )
 
   const createTask = useCallback(
@@ -21,10 +21,10 @@ const Home = () => {
       if (!label) return
 
       await apiClient.tasks.post({ body: { label } })
-      setLabel('')
+      setLabel("")
       revalidate()
     },
-    [label]
+    [label],
   )
 
   const toggleDone = useCallback(async (task: Task) => {
@@ -57,7 +57,7 @@ const Home = () => {
         <p className={styles.description}>frourio-todo-app</p>
 
         <div>
-          <form style={{ textAlign: 'center' }} onSubmit={createTask}>
+          <form style={{ textAlign: "center" }} onSubmit={createTask}>
             <input value={label} type="text" onChange={inputLabel} />
             <input type="submit" value="ADD" />
           </form>
@@ -75,7 +75,7 @@ const Home = () => {
                 <input
                   type="button"
                   value="DELETE"
-                  style={{ float: 'right' }}
+                  style={{ float: "right" }}
                   onClick={() => deleteTask(task)}
                 />
               </li>
@@ -90,7 +90,7 @@ const Home = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
         </a>
       </footer>
