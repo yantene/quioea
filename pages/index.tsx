@@ -43,8 +43,8 @@ const Home = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>frourio-todo-app</title>
-        <link rel="icon" href="/favicon.png" />
+        <title>quioea</title>
+        <link rel="icon" href="/favicon.svg" />
       </Head>
 
       <main className={styles.main}>

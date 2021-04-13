@@ -1,10 +1,10 @@
 {
-  "name": "frourio-app",
+  "name": "quioea",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "npm run migrate:dev && run-p dev:*",
-    "dev:client": "next dev -p 8000",
+    "dev:client": "NODE_OPTIONS='--inspect' next dev -p 8000",
     "dev:server": "npm run dev --prefix server",
     "dev:aspida": "aspida --watch",
     "build": "run-p build:client build:server",
@@ -29,6 +29,8 @@
   "dependencies": {
     "@aspida/axios": "^1.6.3",
     "@aspida/swr": "^1.6.3",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "axios": "^0.21.1",
     "class-validator": "^0.13.1",
     "next": "^10.0.7",
