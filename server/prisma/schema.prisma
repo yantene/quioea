@@ -69,6 +69,8 @@ model Quiz {
   title       String
   /// 概要
   abstract    String
+  /// 問題文
+  statement   String
   /// 最大得点
   score       Int
   /// 正解
@@ -90,7 +92,7 @@ model Answer {
   // relations
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
-  targetQuiz  Quiz   @relation(fields: [quizId], references: [id])
+  quiz        Quiz   @relation(fields: [quizId], references: [id])
   quizId      BigInt
 
   /// true ならば正解している
@@ -115,6 +117,7 @@ model Competition {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // relations
   createdBy          User    @relation(name: "CreatedCompetitions", fields: [createdById], references: [id])
   createdById        String
   quizzes            Quiz[]

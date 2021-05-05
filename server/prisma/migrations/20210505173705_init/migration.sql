@@ -34,6 +34,7 @@ CREATE TABLE "Quiz" (
     "competitionId" BIGINT,
     "title" TEXT NOT NULL,
     "abstract" TEXT NOT NULL,
+    "statement" TEXT NOT NULL,
     "score" INTEGER NOT NULL,
     "flag" TEXT NOT NULL,
     "publishedAt" TIMESTAMP(3) NOT NULL,
