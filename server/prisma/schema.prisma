@@ -24,12 +24,14 @@ model User {
   name  String @unique /// ユーザ名
   email String @unique /// メールアドレス
 
+  /// ハッシュ化されたパスフレーズ
+  hashedPassphrase String
   /// 表示名
   /// NULL の場合 name が表示名扱いになる
-  displayName   String?
+  displayName      String?
   /// プロフィール
-  profile       String  @default("")
-  competitionId BigInt?
+  profile          String  @default("")
+  competitionId    BigInt?
 }
 
 model Group {

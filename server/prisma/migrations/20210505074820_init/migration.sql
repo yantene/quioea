@@ -5,6 +5,7 @@ CREATE TABLE "User" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "hashedPassphrase" TEXT NOT NULL,
     "displayName" TEXT,
     "profile" TEXT NOT NULL DEFAULT E'',
     "competitionId" BIGINT,
