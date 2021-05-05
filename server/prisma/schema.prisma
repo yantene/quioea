@@ -31,7 +31,6 @@ model User {
   displayName      String?
   /// プロフィール
   profile          String  @default("")
-  competitionId    BigInt?
 }
 
 model Group {
@@ -51,7 +50,6 @@ model Group {
   description   String  @default("")
   /// true ならばメンバーはメンバーを追加できる
   memberAddable Boolean @default(false)
-  userId        String?
 }
 
 model Quiz {

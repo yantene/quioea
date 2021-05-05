@@ -8,7 +8,6 @@ CREATE TABLE "User" (
     "hashedPassphrase" TEXT NOT NULL,
     "displayName" TEXT,
     "profile" TEXT NOT NULL DEFAULT E'',
-    "competitionId" BIGINT,
 
     PRIMARY KEY ("id")
 );
@@ -22,7 +21,6 @@ CREATE TABLE "Group" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL DEFAULT E'',
     "memberAddable" BOOLEAN NOT NULL DEFAULT false,
-    "userId" TEXT,
 
     PRIMARY KEY ("id")
 );
