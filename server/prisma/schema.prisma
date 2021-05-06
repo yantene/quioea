@@ -67,19 +67,23 @@ model Quiz {
 
   /// タイトル
   title       String
-  /// 概要
-  abstract    String
   /// 問題文
   statement   String
+  /// 正解フラグの接頭辞
+  flagPrefix  String
+  /// 正解フラグの接尾辞
+  flagSuffix  String
   /// 最大得点
   score       Int
   /// 正解
   flag        String
+  /// 解説
+  explanation String
   /// 公開日時
   /// createdAt 以上の値のみ指定可能。
   /// competitionId が指定されている場合、大会開催期間のみ指定可能。
   publishedAt DateTime
-  /// true なら全公開、false ならフォロワーのみ閲覧・回答可能。
+  /// true ならユーザ全員が閲覧・回答可能、false ならフォロワーのみ閲覧・回答可能。
   /// competitionId が指定されている場合、大会開催期間は参加者のみ閲覧・回答可能となり、その後はこの値に従う。
   public      Boolean
 }

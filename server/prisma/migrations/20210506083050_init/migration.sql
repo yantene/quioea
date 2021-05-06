@@ -33,10 +33,12 @@ CREATE TABLE "Quiz" (
     "createdById" TEXT NOT NULL,
     "competitionId" BIGINT,
     "title" TEXT NOT NULL,
-    "abstract" TEXT NOT NULL,
     "statement" TEXT NOT NULL,
+    "flagPrefix" TEXT NOT NULL,
+    "flagSuffix" TEXT NOT NULL,
     "score" INTEGER NOT NULL,
     "flag" TEXT NOT NULL,
+    "explanation" TEXT NOT NULL,
     "publishedAt" TIMESTAMP(3) NOT NULL,
     "public" BOOLEAN NOT NULL,
 
