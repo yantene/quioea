@@ -307,6 +307,8 @@ paths:
       - name: followeeId
         in: path
         required: true
+        description: |-
+          フォロー対象のユーザID。
         schema:
           $ref: "#/components/schemas/userId"
     put:
@@ -865,6 +867,8 @@ paths:
       - name: resignerId
         in: path
         required: true
+        description: |-
+          投了者のユーザID。
         schema:
           $ref: "#/components/schemas/userId"
     put:
@@ -1250,6 +1254,8 @@ paths:
       - name: participantId
         in: path
         required: true
+        description: |-
+          参加者のユーザID。
         schema:
           $ref: "#/components/schemas/userId"
     put:
