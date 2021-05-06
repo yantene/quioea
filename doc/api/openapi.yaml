@@ -1267,7 +1267,7 @@ components:
     limitOffsetPaginationLink:
       schema:
         type: string
-        example: |
+        example: |-
           <?limit=25&offset=50>; rel="next", <?limit=25&offset=0>; rel="prev"
       description: |-
         limit/offset ページネーション用の Link ヘッダ。
@@ -1281,7 +1281,7 @@ components:
     cursorPaginationLink:
       schema:
         type: string
-        example: |
+        example: |-
           <?limit=25&sinceId=1379875089861070849>
       description: |-
         cursor ページネーション用の Link ヘッダ。
@@ -1378,7 +1378,7 @@ components:
       title: userProfile
       description: |-
         ユーザのプロフィール。
-      example: |
+      example: |-
         これはプロフィールです。
         これはプロフィールです。
         これはプロフィールです。
@@ -1442,7 +1442,7 @@ components:
       title: groupDescription
       description: |-
         グループの説明。
-      example: |
+      example: |-
         これはグループの説明です。
         これはグループの説明です。
         これはグループの説明です。
@@ -1540,7 +1540,7 @@ components:
       description: |-
         クイズ本文。
         TODO: マークアップの方法は別途検討。 commonmark かな。
-      example: |
+      example: |-
         パンはパンでも、食べられないパンはなんだろう。
         フラグは FLAG{食べられないパンの名前} の形式で与えられる。
         波括弧内はすべてカタカナで回答すること。
@@ -1791,7 +1791,7 @@ components:
       title: competitionDescription
       description: |-
         大会の説明。
-      example: |
+      example: |-
         春は出会いと別れの季節。
         そんな時節にぴったりのクイズをたくさん用意しました！
       x-tags:
@@ -2022,9 +2022,9 @@ components:
     userId:
       name: userId
       in: path
+      required: true
       description: |-
         取得するユーザのユーザID。
-      required: true
       schema:
         $ref: "#/components/schemas/userId"
         type: string
