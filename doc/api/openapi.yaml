@@ -272,7 +272,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
-      operationId: getFolloweesByUserName
+      operationId: getFolloweesByUserId
       summary: フォローしているユーザ一覧を取得する。
       description: |-
         フォロー開始時刻の昇順で返却する。
@@ -310,10 +310,10 @@ paths:
         schema:
           $ref: "#/components/schemas/userId"
     put:
-      operationId: putFolloweeByUserName
+      operationId: putFolloweeByUserId
       summary: ユーザをフォローする。
       description: |-
-        ユーザ {userName} がユーザ {followeeName} をフォローする。
+        ユーザ {userId} がユーザ {followeeId} をフォローする。
       tags:
         - user
       responses:
@@ -332,10 +332,10 @@ paths:
           description: |-
             ユーザ {userId} または {followeeId} が存在しない。
     delete:
-      operationId: deleteFolloweeByUserName
+      operationId: deleteFolloweeByUserId
       summary: ユーザのアンフォローする。
       description: |-
-        ユーザ {userName} がユーザ {followeeName} をアンフォローする。
+        ユーザ {userId} がユーザ {followeeId} をアンフォローする。
       tags:
         - user
       responses:
@@ -357,7 +357,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
-      operationId: getFollowersByUserName
+      operationId: getFollowersByUserId
       summary: フォロワーユーザ一覧を取得する。
       description: |-
         フォロー開始時刻の昇順で返却する。
@@ -390,7 +390,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
-      operationId: getQuizzesByUserName
+      operationId: getQuizzesByUserId
       summary: ユーザの投稿したクイズ一覧を取得する。
       description: |-
         ユーザの投稿したクイズ一覧を、最新から `limit` 件返却する。
@@ -422,7 +422,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
-      operationId: getAnswersByUserName
+      operationId: getAnswersByUserId
       summary: ユーザの投稿した回答一覧を取得する。
       description: |-
         ユーザの投稿した回答一覧を、最新から `limit` 件返却する。
@@ -460,6 +460,7 @@ paths:
         - group
       parameters:
         - $ref: "#/components/parameters/groupNames"
+        - $ref: "#/components/parameters/groupIds"
         - $ref: "#/components/parameters/paginationLimit"
         - $ref: "#/components/parameters/paginationOffset"
       responses:
@@ -481,6 +482,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
     post:
       summary: グループを作成する。
+      description: |-
+        グループを作成する。
       operationId: postGroups
       responses:
         "201":
@@ -508,16 +511,14 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Group"
-      description: |-
-        グループ {groupName} を作成する。
-  "/groups/{groupName}":
+  "/groups/{groupId}":
     parameters:
-      - $ref: "#/components/parameters/groupName"
+      - $ref: "#/components/parameters/groupId"
     get:
-      operationId: getGroupByGroupName
+      operationId: getGroupByGroupId
       summary: グループ情報を取得する。
       description: |-
-        グループ {groupName} の情報を取得する。
+        グループ {groupId} の情報を取得する。
       tags:
         - group
       responses:
@@ -530,12 +531,12 @@ paths:
                 $ref: "#/components/schemas/Group"
         "404":
           description: |-
-            ユーザ {groupName} が存在しない。
+            ユーザ {groupId} が存在しない。
     put:
       operationId: putGroup
       summary: グループ情報を更新する。
       description: |-
-        グループ {groupName} のグループ情報を更新する。
+        グループ {groupId} のグループ情報を更新する。
       tags:
         - group
       requestBody:
@@ -550,7 +551,7 @@ paths:
         "200":
           description: |-
             グループ情報の更新に成功した。
-            {groupName} がすでに存在しているグループの場合に返る。
+            {groupId} がすでに存在しているグループの場合に返る。
           content:
             application/json:
               schema:
@@ -558,7 +559,7 @@ paths:
         "201":
           description: |-
             グループの作成に成功した。
-            {groupName} がすでに存在しているグループでない場合に返る。
+            {groupId} がすでに存在しているグループでない場合に返る。
           content:
             application/json:
               schema:
@@ -570,12 +571,12 @@ paths:
         "403":
           description: |-
             グループ情報の更新が禁止されている。
-            {groupName} がすでに存在しているグループで、認証ユーザがグループ {groupName} の管理ユーザでない場合に返る。
-  "/groups/{groupName}/users":
+            {groupId} がすでに存在しているグループで、認証ユーザがグループ {groupId} の管理ユーザでない場合に返る。
+  "/groups/{groupId}/users":
     parameters:
-      - $ref: "#/components/parameters/groupName"
+      - $ref: "#/components/parameters/groupId"
     get:
-      operationId: getUsersByGroupName
+      operationId: getUsersByGroupId
       summary: グループに所属するユーザ一覧を取得する。
       description: |-
         リクエストの条件に当てはまるユーザを、ユーザ作成日の昇順で返却する。
@@ -603,16 +604,16 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "404":
           description: |-
-            グループ {groupName} が存在しない。
-  "/groups/{groupName}/users/{userName}":
+            グループ {groupId} が存在しない。
+  "/groups/{groupId}/users/{userId}":
     parameters:
-      - $ref: "#/components/parameters/groupName"
-      - $ref: "#/components/parameters/userName"
+      - $ref: "#/components/parameters/groupId"
+      - $ref: "#/components/parameters/userId"
     put:
-      operationId: putUserByGroupName
-      summary: "グループ {groupName} にユーザ {userName} を追加する。"
+      operationId: putUserByGroupId
+      summary: "グループ {groupId} にユーザ {userId} を追加する。"
       description: |-
-        グループ {groupName} にユーザ {userName} を追加する。
+        グループ {groupId} にユーザ {userId} を追加する。
       tags:
         - group
       responses:
@@ -626,18 +627,18 @@ paths:
         "403":
           description: |-
             グループへのユーザ追加が禁止されている。
-            認証ユーザがグループ {groupName} の管理ユーザでない場合に返る。
+            認証ユーザがグループ {groupId} の管理ユーザでない場合に返る。
         "404":
           description: |-
-            グループ {groupName} またはユーザ {userName} が存在しない。
+            グループ {groupId} またはユーザ {userId} が存在しない。
         "409":
           description: |-
-            グループ {groupName} にユーザ {userName} がすでに存在している。
+            グループ {groupId} にユーザ {userId} がすでに存在している。
     delete:
-      operationId: deleteUserByGroupName
-      summary: "グループ {groupName} からユーザ {userName} を削除する。"
+      operationId: deleteUserByGroupId
+      summary: "グループ {groupId} からユーザ {userId} を削除する。"
       description: |-
-        グループ {groupName} からユーザ {userName} を削除する。
+        グループ {groupId} からユーザ {userId} を削除する。
       tags:
         - group
       responses:
@@ -649,10 +650,10 @@ paths:
         "403":
           description: |-
             グループからのユーザ削除が禁止されている。
-            認証ユーザがグループ {groupName} の管理ユーザでない場合に返る。
+            認証ユーザがグループ {groupId} の管理ユーザでない場合に返る。
         "404":
           description: |-
-            グループ {groupName} またはグループ中にユーザ {userName} が存在しない。
+            グループ {groupId} またはグループ中にユーザ {userId} が存在しない。
   /quizzes:
     get:
       operationId: getQuizzes
@@ -688,10 +689,9 @@ paths:
       operationId: postQuizzes
       summary: クイズを作成する。
       description: |-
-        `targetUserName` を省略した場合、`null` となり、全ユーザに公開される。
         `publishedAt` を省略した場合、
-        `published` が `true` なら `createdAt` と同じ時刻、
-        `published` が `false` なら `null` になる。
+        `competitionId` が指定されている場合大会の開催時刻、
+        指定されていない場合 `createdAt` と同じ時刻になる。
       tags:
         - quiz
       requestBody:
@@ -1276,7 +1276,7 @@ paths:
             大会 {competitionId} またはユーザ {participantId} が存在しない。
     delete:
       operationId: deleteParticipantByCompetitionId
-      summary: "大会 {competitionId} の参加ユーザからユーザ {participantName} を削除する。"
+      summary: "大会 {competitionId} の参加ユーザからユーザ {participantId} を削除する。"
       description: |-
         大会 {competitionId} の参加ユーザからユーザ {participantId} を削除する。
       tags:
@@ -1893,6 +1893,7 @@ components:
       x-tags:
         - common
   parameters:
+    # common
     paginationLimit:
       name: limit
       in: query
@@ -1933,6 +1934,7 @@ components:
       schema:
         type: integer
         format: int64
+    # query
     userNames:
       name: userNames
       in: query
@@ -1942,6 +1944,15 @@ components:
         type: array
         items:
           $ref: "#/components/schemas/userName"
+    userIds:
+      name: userIds
+      in: query
+      description: |-
+        取得する複数のユーザのユーザID。
+      schema:
+        type: array
+        items:
+          $ref: "#/components/schemas/userId"
     groupNames:
       name: groupNames
       in: query
@@ -1951,6 +1962,15 @@ components:
         type: array
         items:
           $ref: "#/components/schemas/groupName"
+    groupIds:
+      name: groupIds
+      in: query
+      description: |-
+        取得する複数のグループのグループID。
+      schema:
+        type: array
+        items:
+          $ref: "#/components/schemas/groupId"
     quizIds:
       name: quizIds
       in: query
@@ -1978,31 +1998,24 @@ components:
         type: array
         items:
           $ref: "#/components/schemas/competitionId"
-    userName:
-      name: userName
+    # path
+    userId:
+      name: userId
       in: path
       required: true
       description: |-
-        取得するユーザのユーザ名。
+        取得するユーザのユーザID。
       schema:
-        $ref: "#/components/schemas/userName"
+        $ref: "#/components/schemas/userId"
         type: string
-    followeeName:
-      name: followeeName
+    groupId:
+      name: groupId
       in: path
       required: true
       description: |-
-        フォロー対象のユーザのユーザ名。
+        取得するグループのグループID。
       schema:
-        $ref: "#/components/schemas/userName"
-    groupName:
-      name: groupName
-      in: path
-      required: true
-      description: |-
-        取得するグループのグループ名。
-      schema:
-        $ref: "#/components/schemas/groupName"
+        $ref: "#/components/schemas/groupId"
     quizId:
       name: quizId
       in: path
@@ -2043,24 +2056,6 @@ components:
         大会参加ユーザのユーザ名。
       schema:
         $ref: "#/components/schemas/userName"
-    userIds:
-      name: userIds
-      in: query
-      description: |-
-        取得する複数のユーザのユーザID。
-      schema:
-        type: array
-        items:
-          $ref: "#/components/schemas/userId"
-    userId:
-      name: userId
-      in: path
-      required: true
-      description: |-
-        取得するユーザのユーザID。
-      schema:
-        $ref: "#/components/schemas/userId"
-        type: string
   securitySchemes:
     SESSIONID:
       name: JWT Session token
