@@ -1,72 +1,72 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
   title: quioea
-  description: A quiz platform
-  version: '0.1'
+  description: |-
+    A quiz platform
+  version: "0.1"
   contact:
     name: GitHub Repository
-    url: 'https://github.com/yantene/quioea'
+    url: "https://github.com/yantene/quioea"
 servers:
-  - url: 'https://quioea.fla.red/api'
+  - url: "https://quioea.fla.red/api"
     description: production
-  - url: 'https://stg.quioea.fla.red/api'
+  - url: "https://stg.quioea.fla.red/api"
     description: staging
-  - url: 'http://localhost:48080/api'
+  - url: "http://localhost:48080/api"
     description: development
 tags:
   - name: session
-    description: |
+    description: |-
       セッション。
   - name: user
-    description: |
+    description: |-
       ユーザ。
       クイズを作成したり、クイズに回答したり、大会を作成したりするにはユーザ登録とログインが必要となる。
       ユーザの存在は隠すことができないが、投稿する各クイズの可視性は制御可能。
   - name: group
-    description: |
+    description: |-
       グループ。
       ユーザを束ねる単位。
       クイズや大会の可視性をこのグループの単位で設定することができる。
   - name: quiz
-    description: |
+    description: |-
       クイズ。
       基本的にはCTF形式の問題が前提となっており、問題文とフラグのペアからなる。
       クイズの可視性は全体、ログインユーザのみ、特定グループ（複数選択可）のユーザのみ、特定ユーザ（複数選択可）のユーザのみで設定可能。
   - name: answer
-    description: |
+    description: |-
       回答。
   - name: tag
-    description: |
+    description: |-
       タグ。
       クイズ出題時に任意で付与することができる。
   - name: competition
-    description: |
+    description: |-
       大会。
 paths:
   /session:
     get:
       operationId: getSession
       summary: セッション情報を取得する。
-      description: |
+      description: |-
         現在ログイン中のユーザのユーザ名を取得する。
       tags:
         - session
       responses:
-        '200':
-          description: セッション情報の取得に成功した。
+        "200":
+          description: |-
+            セッション情報の取得に成功した。
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  userName:
-                    $ref: '#/components/schemas/userName'
-        '404':
-          description: 未ログインである。
+                $ref: "#/components/schemas/User"
+        "404":
+          description: |-
+            未ログインである。
     put:
       operationId: putSession
       summary: ログインする。
-      description: |
+      description: |-
         セッショントークンを含む Cookie を取得する。
       tags:
         - session
@@ -80,273 +80,321 @@ paths:
                 - userPassphrase
               properties:
                 userName:
-                  $ref: '#/components/schemas/userName'
+                  $ref: "#/components/schemas/userName"
                 userPassphrase:
-                  $ref: '#/components/schemas/userPassphrase'
+                  $ref: "#/components/schemas/userPassphrase"
       responses:
-        '201':
-          description: ログインに成功した。
+        "201":
+          description: |-
+            ログインに成功した。
           headers:
             Location:
               schema:
                 type: string
                 example: /session
-              description: セッション情報のリソースの所在。
+              description: |-
+                セッション情報のリソースの所在。
             Set-Cookie:
               schema:
                 type: string
                 example: SESSIONID=hoge; Max-Age=259200; Path=/; Secure; HttpOnly; SameSite=Strict
-              description: セッショントークン (JWT) を返す。
+              description: |-
+                セッショントークン (JWT) を返す。
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   userName:
-                    $ref: '#/components/schemas/userName'
+                    $ref: "#/components/schemas/userName"
               examples:
                 example-1:
                   value:
                     userName: yantene
-        '409':
-          description: すでにログイン済みである。
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaTypeError'
+        "409":
+          description: |-
+            すでにログイン済みである。
+        "415":
+          $ref: "#/components/responses/UnsupportedMediaTypeError"
     delete:
       operationId: deleteSession
       summary: ログアウトする。
-      description: Cookie からセッショントークンを削除する。
+      description: |-
+        Cookie からセッショントークンを削除する。
       tags:
         - session
       responses:
-        '204':
-          description: ログアウトに成功した。
+        "204":
+          description: |-
+            ログアウトに成功した。
           headers:
             Set-Cookie:
               schema:
                 type: string
                 example: SESSIONID=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Strict
-              description: 有効期限が切れるヘッダを送る。
-        '404':
-          description: 未ログインである。
-      parameters: []
+              description: |-
+                有効期限が切れるヘッダを送る。
+        "404":
+          description: |-
+            未ログインである。
   /users:
     get:
       operationId: getUsers
       summary: ユーザ一覧を取得する。
-      description: |
+      description: |-
         リクエストの条件に当てはまるユーザを、ユーザ作成日の昇順で返却する。
       tags:
         - user
       parameters:
-        - $ref: '#/components/parameters/userNames'
-        - $ref: '#/components/parameters/paginationLimit'
-        - $ref: '#/components/parameters/paginationOffset'
+        - $ref: "#/components/parameters/userNames"
+        - $ref: "#/components/parameters/userIds"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
       responses:
-        '200':
-          description: ユーザ一覧の取得に成功した。
+        "200":
+          description: |-
+            ユーザ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/limitOffsetPaginationLink'
+              $ref: "#/components/headers/limitOffsetPaginationLink"
             X-Total-Count:
-              $ref: '#/components/headers/limitOffsetPaginationXTotalCount'
+              $ref: "#/components/headers/limitOffsetPaginationXTotalCount"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-  '/users/{userName}':
-    get:
-      operationId: getUserByUserName
-      summary: ユーザ情報を取得する。
-      description: |
-        ユーザ名を元にユーザ情報を取得する。
-      tags:
-        - user
-      parameters:
-        - $ref: '#/components/parameters/userName'
+                  $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+    post:
+      summary: ユーザを作成する。
+      operationId: postUsers
       responses:
-        '200':
-          description: ユーザ情報の取得に成功した。
+        "201":
+          description: |-
+            ユーザの作成に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: 'ユーザ {userName} が存在しない。'
-    put:
-      operationId: putUser
-      summary: ユーザを作成またはユーザ情報を更新する。
-      description: |
-        ユーザ {userName} が存在しない場合、新規でユーザを作成する。
-        ユーザ {userName} が既存の場合、ユーザ情報を更新する。
-      tags:
-        - user
-      parameters:
-        - $ref: '#/components/parameters/userName'
+                $ref: "#/components/schemas/User"
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                作成したユーザのリソースの所在。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "409":
+          description: |-
+            同じメールアドレスまたはユーザ名がすでに存在するので作成できない。
+      description: |-
+        新規でユーザを作成する。
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                profile:
-                  $ref: '#/components/schemas/userProfile'
-                passphrase:
-                  $ref: '#/components/schemas/userPassphrase'
+              $ref: "#/components/schemas/User"
+  "/users/{userId}":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    get:
+      operationId: getUserByUserId
+      summary: ユーザ情報を取得する。
+      description: |-
+        ユーザ {userId} のユーザ情報を取得する。
+      tags:
+        - user
       responses:
-        '200':
-          description: |
-            ユーザ情報の更新に成功した。 ({userName} がすでに存在しているユーザの場合)
+        "200":
+          description: |-
+            ユーザ {userId} のユーザ情報の取得に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '201':
-          description: |
-            ユーザの作成に成功した。 ({userName} が存在しないユーザの場合)
+                $ref: "#/components/schemas/User"
+        "404":
+          description: |-
+            ユーザ {userId} が存在しない。
+    put:
+      operationId: putUser
+      summary: ユーザ情報を更新する。
+      description: |-
+        ユーザ {userId} のユーザ情報を更新する。
+
+        `passphrase` を更新する際には、`oldPassphrase` の指定が必須。
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: |-
+            ユーザ {userId} のユーザ情報の更新に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: |
-            ユーザ {userName} のユーザ情報の更新権限がログインユーザにない。 ({userName} がすでに存在しているユーザの場合)
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            ユーザ {userId} のユーザ情報の更新権限がログインユーザにない。
+        "404":
+          description: |-
+            ユーザ {userId} が存在しない。
     delete:
       operationId: deleteUser
       summary: ユーザを削除する。
-      description: |
-        ユーザ {userName} を削除する。
+      description: |-
+        ユーザ {userId} を削除する。
       tags:
         - user
-      parameters:
-        - $ref: '#/components/parameters/userName'
       responses:
-        '204':
-          description: ユーザの削除に成功した。
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: 'ユーザ {userName} の削除権限がログインユーザにない。'
-        '404':
-          description: 'ユーザ {userName} が存在しない。'
-  '/users/{userName}/followees':
+        "204":
+          description: |-
+            ユーザ {userId} のユーザの削除に成功した。
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            ユーザ {userId} の削除権限がログインユーザにない。
+        "404":
+          description: |-
+            ユーザ {userId} が存在しない。
+  "/users/{userId}/followees":
+    parameters:
+      - $ref: "#/components/parameters/userId"
     get:
-      operationId: getFolloweesByUserName
+      operationId: getFolloweesByUserId
       summary: フォローしているユーザ一覧を取得する。
-      description: |
+      description: |-
         フォロー開始時刻の昇順で返却する。
       tags:
         - user
       parameters:
-        - $ref: '#/components/parameters/userName'
-        - $ref: '#/components/parameters/paginationLimit'
-        - $ref: '#/components/parameters/paginationOffset'
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
       responses:
-        '200':
-          description: フォローしているユーザ一覧の取得に成功した。
+        "200":
+          description: |-
+            ユーザ {userId} がフォローしているユーザ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/limitOffsetPaginationLink'
+              $ref: "#/components/headers/limitOffsetPaginationLink"
             X-Total-Count:
-              $ref: '#/components/headers/limitOffsetPaginationXTotalCount'
+              $ref: "#/components/headers/limitOffsetPaginationXTotalCount"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '404':
-          description: 'ユーザ {userName} が存在しない。'
-  '/users/{userName}/followees/{followeeName}':
+                  $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          description: |-
+            ユーザ {userId} が存在しない。
+  "/users/{userId}/followees/{followeeId}":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+      - name: followeeId
+        in: path
+        required: true
+        description: |-
+          フォロー対象のユーザID。
+        schema:
+          $ref: "#/components/schemas/userId"
     put:
-      operationId: putFolloweeByUserName
+      operationId: putFolloweeByUserId
       summary: ユーザをフォローする。
-      description: |
-        ユーザ {userName} がユーザ {followeeName} をフォローする。
+      description: |-
+        ユーザ {userId} がユーザ {followeeId} をフォローする。
       tags:
         - user
-      parameters:
-        - $ref: '#/components/parameters/userName'
-        - $ref: '#/components/parameters/followeeName'
       responses:
-        '204':
-          description: フォローに成功した。
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: |
+        "204":
+          description: |-
+            ユーザ {userId} がユーザ {followeeId} のフォローに成功した。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
             以下のような理由で、フォローが禁止されている。
-            - {userName} に自分以外を指定している。
-        '404':
-          description: 'ユーザ {userName} または {followeeName} が存在しない。'
+            - {userId} に自分以外を指定している。
+        "404":
+          description: |-
+            ユーザ {userId} または {followeeId} が存在しない。
     delete:
-      operationId: deleteFolloweeByUserName
+      operationId: deleteFolloweeByUserId
       summary: ユーザのアンフォローする。
-      description: |
-        ユーザ {userName} がユーザ {followeeName} をアンフォローする。
+      description: |-
+        ユーザ {userId} がユーザ {followeeId} をアンフォローする。
       tags:
         - user
-      parameters:
-        - $ref: '#/components/parameters/userName'
-        - $ref: '#/components/parameters/followeeName'
       responses:
-        '204':
-          description: アンフォローに成功した。
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: |
+        "204":
+          description: |-
+            ユーザ {userId} がユーザ {followeeId} のアンフォローに成功した。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
             以下のような理由で、アンフォローが禁止されている。
-            - {userName} に自分以外を指定している。
-        '404':
-          description: 'ユーザ {userName} または {followeeName} が存在しないか、{followeeName} をフォローしていない。'
-  '/users/{userName}/followers':
+            - {userId} に自分以外を指定している。
+        "404":
+          description: |-
+            ユーザ {userId} または {followeeId} が存在しないか、{followeeId} をフォローしていない。
+  "/users/{userId}/followers":
+    parameters:
+      - $ref: "#/components/parameters/userId"
     get:
-      operationId: getFollowersByUserName
+      operationId: getFollowersByUserId
       summary: フォロワーユーザ一覧を取得する。
-      description: |
+      description: |-
         フォロー開始時刻の昇順で返却する。
       tags:
         - user
       parameters:
-        - $ref: '#/components/parameters/userName'
-        - $ref: '#/components/parameters/paginationLimit'
-        - $ref: '#/components/parameters/paginationOffset'
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
       responses:
-        '200':
-          description: フォロワーユーザ一覧の取得に成功した。
+        "200":
+          description: |-
+            ユーザ {userId} のフォロワーユーザ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/limitOffsetPaginationLink'
+              $ref: "#/components/headers/limitOffsetPaginationLink"
             X-Total-Count:
-              $ref: '#/components/headers/limitOffsetPaginationXTotalCount'
+              $ref: "#/components/headers/limitOffsetPaginationXTotalCount"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '404':
-          description: 'ユーザ {userName} が存在しない。'
-  '/users/{userName}/quizzes':
+                  $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          description: |-
+            ユーザ {userId} が存在しない。
+  "/users/{userId}/quizzes":
+    parameters:
+      - $ref: "#/components/parameters/userId"
     get:
-      operationId: getQuizzesByUserName
+      operationId: getQuizzesByUserId
       summary: ユーザの投稿したクイズ一覧を取得する。
-      description: |
+      description: |-
         ユーザの投稿したクイズ一覧を、最新から `limit` 件返却する。
         `maxId` が与えられた場合には、`quizId` が `maxId` 以上のクイズを小さい方から `limit` 件返却する。
         `sinceId` が与えられた場合には、`quizId` が `sinceId` 未満のクイズを大きい方から `limit` 件返却する。
@@ -354,29 +402,31 @@ paths:
       tags:
         - user
       parameters:
-        - $ref: '#/components/parameters/userName'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: クイズ一覧の取得に成功した。
+        "200":
+          description: |-
+            ユーザ {userId} が作成したクイズ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Quiz'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-  '/users/{userName}/answers':
+                  $ref: "#/components/schemas/Quiz"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+  "/users/{userId}/answers":
+    parameters:
+      - $ref: "#/components/parameters/userId"
     get:
-      operationId: getAnswersByUserName
+      operationId: getAnswersByUserId
       summary: ユーザの投稿した回答一覧を取得する。
-      description: |
+      description: |-
         ユーザの投稿した回答一覧を、最新から `limit` 件返却する。
         `maxId` が与えられた場合には、`quizId` が `maxId` 以上の回答を小さい方から `limit` 件返却する。
         `sinceId` が与えられた場合には、`quizId` が `sinceId` 未満の回答を大きい方から `limit` 件返却する。
@@ -384,81 +434,113 @@ paths:
       tags:
         - user
       parameters:
-        - $ref: '#/components/parameters/userName'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: 回答一覧の取得に成功した。
+        "200":
+          description: |-
+            ユーザ {userId} の回答一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Answer'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
+                  $ref: "#/components/schemas/Answer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
   /groups:
     get:
       operationId: getGroups
       summary: グループ一覧を取得する。
-      description: |
+      description: |-
         リクエストの条件に当てはまるグループを、グループ作成日の昇順で返却する。
       tags:
         - group
       parameters:
-        - $ref: '#/components/parameters/groupNames'
-        - $ref: '#/components/parameters/paginationLimit'
-        - $ref: '#/components/parameters/paginationOffset'
+        - $ref: "#/components/parameters/groupNames"
+        - $ref: "#/components/parameters/groupIds"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
       responses:
-        '200':
-          description: グループ一覧の取得に成功した。
+        "200":
+          description: |-
+            グループ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/limitOffsetPaginationLink'
+              $ref: "#/components/headers/limitOffsetPaginationLink"
             X-Total-Count:
-              $ref: '#/components/headers/limitOffsetPaginationXTotalCount'
+              $ref: "#/components/headers/limitOffsetPaginationXTotalCount"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Group'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-  '/groups/{groupName}':
-    get:
-      operationId: getGroupByGroupName
-      summary: グループ情報を取得する。
-      description: |
-        グループ {groupName} の情報を取得する。
-      tags:
-        - group
-      parameters:
-        - $ref: '#/components/parameters/groupName'
+                  $ref: "#/components/schemas/Group"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+    post:
+      summary: グループを作成する。
+      description: |-
+        グループを作成する。
+      operationId: postGroups
       responses:
-        '200':
-          description: グループ情報の取得に成功した。
+        "201":
+          description: |-
+            グループの作成に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Group'
-        '404':
-          description: 'ユーザ {groupName} が存在しない。'
-    put:
-      operationId: putGroup
-      summary: グループを作成またはグループ情報を更新する。
-      description: |
-        グループ {groupName} が存在しない場合、グループを作成する。
-        グループ {groupName} が既存の場合、グループの情報を更新する。
+                $ref: "#/components/schemas/Group"
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                作成したグループのリソースの所在。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "409":
+          description: |-
+            同じグループ名がすでに存在するので作成できない。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Group"
+  "/groups/{groupId}":
+    parameters:
+      - $ref: "#/components/parameters/groupId"
+    get:
+      operationId: getGroupByGroupId
+      summary: グループ情報を取得する。
+      description: |-
+        グループ {groupId} の情報を取得する。
       tags:
         - group
-      parameters:
-        - $ref: '#/components/parameters/groupName'
+      responses:
+        "200":
+          description: |-
+            グループ情報の取得に成功した。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "404":
+          description: |-
+            ユーザ {groupId} が存在しない。
+    put:
+      operationId: putGroup
+      summary: グループ情報を更新する。
+      description: |-
+        グループ {groupId} のグループ情報を更新する。
+      tags:
+        - group
       requestBody:
         content:
           application/json:
@@ -466,114 +548,119 @@ paths:
               type: object
               properties:
                 description:
-                  $ref: '#/components/schemas/groupDescription'
+                  $ref: "#/components/schemas/groupDescription"
       responses:
-        '200':
-          description: |
+        "200":
+          description: |-
             グループ情報の更新に成功した。
-            {groupName} がすでに存在しているグループの場合に返る。
+            {groupId} がすでに存在しているグループの場合に返る。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Group'
-        '201':
-          description: |
+                $ref: "#/components/schemas/Group"
+        "201":
+          description: |-
             グループの作成に成功した。
-            {groupName} がすでに存在しているグループでない場合に返る。
+            {groupId} がすでに存在しているグループでない場合に返る。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Group'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: |
+                $ref: "#/components/schemas/Group"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
             グループ情報の更新が禁止されている。
-            {groupName} がすでに存在しているグループで、認証ユーザがグループ {groupName} の管理ユーザでない場合に返る。
-  '/groups/{groupName}/users':
+            {groupId} がすでに存在しているグループで、認証ユーザがグループ {groupId} の管理ユーザでない場合に返る。
+  "/groups/{groupId}/users":
+    parameters:
+      - $ref: "#/components/parameters/groupId"
     get:
-      operationId: getUsersByGroupName
+      operationId: getUsersByGroupId
       summary: グループに所属するユーザ一覧を取得する。
-      description: |
+      description: |-
         リクエストの条件に当てはまるユーザを、ユーザ作成日の昇順で返却する。
       tags:
         - group
       parameters:
-        - $ref: '#/components/parameters/groupName'
-        - $ref: '#/components/parameters/paginationLimit'
-        - $ref: '#/components/parameters/paginationOffset'
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationOffset"
       responses:
-        '200':
-          description: グループに所属するユーザ一覧の取得に成功した。
+        "200":
+          description: |-
+            グループに所属するユーザ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/limitOffsetPaginationLink'
+              $ref: "#/components/headers/limitOffsetPaginationLink"
             X-Total-Count:
-              $ref: '#/components/headers/limitOffsetPaginationXTotalCount'
+              $ref: "#/components/headers/limitOffsetPaginationXTotalCount"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '404':
-          description: 'グループ {groupName} が存在しない。'
-  '/groups/{groupName}/users/{userName}':
+                  $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          description: |-
+            グループ {groupId} が存在しない。
+  "/groups/{groupId}/users/{userId}":
+    parameters:
+      - $ref: "#/components/parameters/groupId"
+      - $ref: "#/components/parameters/userId"
     put:
-      operationId: putUserByGroupName
-      summary: 'グループ {groupName} にユーザ {userName} を追加する。'
-      description: |
-        グループ {groupName} にユーザ {userName} を追加する。
+      operationId: putUserByGroupId
+      summary: "グループ {groupId} にユーザ {userId} を追加する。"
+      description: |-
+        グループ {groupId} にユーザ {userId} を追加する。
       tags:
         - group
-      parameters:
-        - $ref: '#/components/parameters/groupName'
-        - $ref: '#/components/parameters/userName'
       responses:
-        '204':
-          description: ユーザの追加に成功した。
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: |
+        "204":
+          description: |-
+            ユーザの追加に成功した。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
             グループへのユーザ追加が禁止されている。
-            認証ユーザがグループ {groupName} の管理ユーザでない場合に返る。
-        '404':
-          description: 'グループ {groupName} またはユーザ {userName} が存在しない。'
-        '409':
-          description: 'グループ {groupName} にユーザ {userName} がすでに存在している。'
+            認証ユーザがグループ {groupId} の管理ユーザでない場合に返る。
+        "404":
+          description: |-
+            グループ {groupId} またはユーザ {userId} が存在しない。
+        "409":
+          description: |-
+            グループ {groupId} にユーザ {userId} がすでに存在している。
     delete:
-      operationId: deleteUserByGroupName
-      summary: 'グループ {groupName} からユーザ {userName} を削除する。'
-      description: |
-        グループ {groupName} からユーザ {userName} を削除する。
+      operationId: deleteUserByGroupId
+      summary: "グループ {groupId} からユーザ {userId} を削除する。"
+      description: |-
+        グループ {groupId} からユーザ {userId} を削除する。
       tags:
         - group
-      parameters:
-        - $ref: '#/components/parameters/groupName'
-        - $ref: '#/components/parameters/userName'
       responses:
-        '204':
-          description: ユーザの削除に成功した。
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: |
+        "204":
+          description: |-
+            ユーザの削除に成功した。
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
             グループからのユーザ削除が禁止されている。
-            認証ユーザがグループ {groupName} の管理ユーザでない場合に返る。
-        '404':
-          description: 'グループ {groupName} またはグループ中にユーザ {userName} が存在しない。'
+            認証ユーザがグループ {groupId} の管理ユーザでない場合に返る。
+        "404":
+          description: |-
+            グループ {groupId} またはグループ中にユーザ {userId} が存在しない。
   /quizzes:
     get:
       operationId: getQuizzes
       summary: クイズ一覧を取得する。
-      description: |
+      description: |-
         クイズ一覧を、最新から `limit` 件返却する。
         `maxId` が与えられた場合には、`quizId` が `maxId` 以上のクイズを小さい方から `limit` 件返却する。
         `sinceId` が与えられた場合には、`quizId` が `sinceId` 未満のクイズを大きい方から `limit` 件返却する。
@@ -581,220 +668,233 @@ paths:
       tags:
         - quiz
       parameters:
-        - $ref: '#/components/parameters/quizIds'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/quizIds"
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: クイズ一覧の取得に成功した。
+        "200":
+          description: |-
+            クイズ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Quiz'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
+                  $ref: "#/components/schemas/Quiz"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
     post:
       operationId: postQuizzes
       summary: クイズを作成する。
-      description: |
-        `targetUserName` を省略した場合、`null` となり、全ユーザに公開される。
+      description: |-
         `publishedAt` を省略した場合、
-        `published` が `true` なら `createdAt` と同じ時刻、
-        `published` が `false` なら `null` になる。
+        `competitionId` が指定されている場合大会の開催時刻、
+        指定されていない場合 `createdAt` と同じ時刻になる。
       tags:
         - quiz
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - title
-                - abstract
-                - statement
-                - score
-                - flag
-                - tagNames
-                - published
-              properties:
-                title:
-                  $ref: '#/components/schemas/quizTitle'
-                abstract:
-                  $ref: '#/components/schemas/quizAbstract'
-                statement:
-                  $ref: '#/components/schemas/quizStatement'
-                score:
-                  $ref: '#/components/schemas/quizScore'
-                flag:
-                  $ref: '#/components/schemas/quizFlag'
-                tagNames:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/tagName'
-                targetUserNames:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/userName'
-                targetGroupNames:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/groupName'
-                published:
-                  $ref: '#/components/schemas/quizPublished'
-                publishedAt:
-                  $ref: '#/components/schemas/timestamp'
+              $ref: "#/components/schemas/Quiz"
       responses:
-        '201':
-          description: クイズの作成に成功した。
+        "201":
+          description: |-
+            クイズの作成に成功した。
           headers:
             Location:
               schema:
                 type: string
-                example: '/quizzes/{quizId}'
-              description: 作成したクイズのリソースの所在。
+                example: "/quizzes/{quizId}"
+              description: |-
+                作成したクイズのリソースの所在。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Quiz'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-  '/quizzes/{quizId}':
+                $ref: "#/components/schemas/Quiz"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+  "/quizzes/{quizId}":
+    parameters:
+      - $ref: "#/components/parameters/quizId"
     get:
       operationId: getQuizByQuizId
       summary: クイズ詳細を取得する。
-      description: |
+      description: |-
         クイズ {quizId} の情報を取得する。
       tags:
         - quiz
-      parameters:
-        - $ref: '#/components/parameters/quizId'
       responses:
-        '200':
-          description: クイズ詳細の取得に成功した。
+        "200":
+          description: |-
+            クイズ詳細の取得に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Quiz'
-        '404':
-          description: 'クイズ {quizId} が存在しない。またはログインユーザに閲覧権限がない。'
+                $ref: "#/components/schemas/Quiz"
+        "404":
+          description: |-
+            クイズ {quizId} が存在しない。またはログインユーザに閲覧権限がない。
     put:
       operationId: putQuiz
       summary: クイズを更新する。
-      description: |
+      description: |-
         クイズ {quizId} の情報を更新する。
       tags:
         - quiz
-      parameters:
-        - $ref: '#/components/parameters/quizId'
       responses:
-        '200':
-          description: クイズの更新に成功した。
+        "200":
+          description: |-
+            クイズの更新に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Quiz'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: クイズの更新権限がログインユーザにない。
-        '404':
-          description: 'クイズ {quizId} が存在しない。'
+                $ref: "#/components/schemas/Quiz"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            クイズの更新権限がログインユーザにない。
+        "404":
+          description: |-
+            クイズ {quizId} が存在しない。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Quiz"
     delete:
       operationId: deleteQuiz
       summary: クイズを削除する。
-      description: |
+      description: |-
         クイズ {quizId} を削除する。
       tags:
         - quiz
-      parameters:
-        - $ref: '#/components/parameters/quizId'
       responses:
-        '204':
-          description: クイズの削除に成功した。
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: クイズの削除権限がログインユーザにない。
-        '404':
-          description: 'クイズ {quizId} が存在しない。'
-  '/quizzes/{quizId}/answers':
+        "204":
+          description: |-
+            クイズの削除に成功した。
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            クイズの削除権限がログインユーザにない。
+        "404":
+          description: |-
+            クイズ {quizId} が存在しない。
+  "/quizzes/{quizId}/answers":
+    parameters:
+      - $ref: "#/components/parameters/quizId"
     get:
       operationId: getAnswersByQuizId
       summary: クイズの回答一覧を取得する。
-      description: |
+      description: |-
         ログインしていない場合には誰が回答しているかのみがわかる。
         自分が正答していない場合には、自分の誤答と、他の誰が回答しているかのみがわかる。
       tags:
         - quiz
       parameters:
-        - $ref: '#/components/parameters/quizId'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: クイズの回答一覧の取得に成功した。
+        "200":
+          description: |-
+            クイズの回答一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Answer'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '404':
-          description: 'クイズ {quizId} が存在しない。'
+                  $ref: "#/components/schemas/Answer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          description: |-
+            クイズ {quizId} が存在しない。"
     post:
       operationId: postAnswersByQuizId
       summary: クイズに回答する。
-      description: |
+      description: |-
         クイズ {quizId} に対する回答を作成する。
       tags:
         - quiz
-      parameters:
-        - $ref: '#/components/parameters/quizId'
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - flag
-              properties:
-                flag:
-                  $ref: '#/components/schemas/answerFlag'
+              $ref: "#/components/schemas/Answer"
       responses:
-        '201':
-          description: クイズへの回答の作成に成功した。
+        "201":
+          description: |-
+            クイズへの回答の作成に成功した。
           headers:
             Location:
               schema:
                 type: string
-                example: '/answers/{answerId}'
-              description: 作成した回答のリソースの所在。
+                example: "/answers/{answerId}"
+              description: |-
+                作成した回答のリソースの所在。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Answer'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: クイズへの回答権限がログインユーザにない。
-        '404':
-          description: 'クイズ {quizId} が存在しない。'
+                $ref: "#/components/schemas/Answer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            以下のような理由で、回答が禁止されている。
+            - このクイズへの回答権限がログインユーザにない。
+            - このクイズにすでに正解している。
+            - このクイズにすでに投了している。
+        "404":
+          description: |-
+            クイズ {quizId} が存在しない。
+  "/quizzes/{quizId}/resigners/{resignerId}":
+    parameters:
+      - $ref: "#/components/parameters/quizId"
+      - name: resignerId
+        in: path
+        required: true
+        description: |-
+          投了者のユーザID。
+        schema:
+          $ref: "#/components/schemas/userId"
+    put:
+      operationId: putCapitulantByQuizId
+      summary: クイズに投了する。
+      description: |-
+        クイズ {quizId} に対しユーザ {resignerId} が投了する。
+      tags:
+        - quiz
+      responses:
+        "204":
+          description: |-
+            ユーザ {resignerId} が クイズ {quizId} に対して投了に成功した。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            以下のような理由で、投了が禁止されている。
+            - {resignerId} に自分以外を指定している。
+            - このクイズにすでに正解している。
+            - このクイズにすでに投了している。
+        "404":
+          description: |-
+            クイズ {quizId} またはユーザ {resignerId} が存在しない。
   /answers:
     get:
       operationId: getAnswers
@@ -807,96 +907,103 @@ paths:
       tags:
         - answer
       parameters:
-        - $ref: '#/components/parameters/answerIds'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/answerIds"
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: 回答一覧の取得に成功した。
+        "200":
+          description: |-
+            回答一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Answer'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-  '/answers/{answerId}':
+                  $ref: "#/components/schemas/Answer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+  "/answers/{answerId}":
+    parameters:
+      - $ref: "#/components/parameters/answerId"
     get:
       operationId: getAnswerByAnswerId
       summary: 回答情報を取得する。
-      description: |
+      description: |-
         回答 {answerId} の情報を取得する。
       tags:
         - answer
-      parameters:
-        - $ref: '#/components/parameters/answerId'
       responses:
-        '200':
-          description: クイズへの回答情報の取得に成功した。
+        "200":
+          description: |-
+            クイズへの回答情報の取得に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Answer'
-        '404':
-          description: '回答 {answerId} が存在しない。'
+                $ref: "#/components/schemas/Answer"
+        "404":
+          description: |-
+            回答 {answerId} が存在しない。
   /tags:
     get:
       operationId: getTags
       summary: タグ一覧を取得する。
-      description: |
+      description: |-
         タグ一覧を取得する。
       tags:
         - tag
       parameters:
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: タグ一覧の取得に成功した。
+        "200":
+          description: |-
+            タグ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-  '/tags/{tagName}/quizzes':
+                  $ref: "#/components/schemas/Tag"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+  "/tags/{tagName}/quizzes":
+    parameters:
+      - $ref: "#/components/parameters/tagName"
     get:
       operationId: getQuizzesByTagName
-      summary: 'タグ {tagName} に所属するクイズ一覧を取得する。'
-      description: |
+      summary: "タグ {tagName} に所属するクイズ一覧を取得する。"
+      description: |-
         タグ {tagName} に所属するクイズ一覧を取得する。
       tags:
         - tag
       parameters:
-        - $ref: '#/components/parameters/tagName'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: クイズ一覧の取得に成功した。
+        "200":
+          description: |-
+            クイズ一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Quiz'
-        '404':
-          description: 'タグ {tagName} が存在しない。'
+                  $ref: "#/components/schemas/Quiz"
+        "404":
+          description: |-
+            タグ {tagName} が存在しない。
   /competitions:
     get:
       operationId: getCompetitions
@@ -909,28 +1016,29 @@ paths:
       tags:
         - competition
       parameters:
-        - $ref: '#/components/parameters/competitionIds'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/competitionIds"
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: 大会一覧の取得に成功した。
+        "200":
+          description: |-
+            大会一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Competition'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
+                  $ref: "#/components/schemas/Competition"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
     post:
       operationId: postCompetitions
       summary: 大会を作成する。
-      description: |
+      description: |-
         大会を作成する。
       tags:
         - competition
@@ -938,599 +1046,864 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  $ref: '#/components/schemas/competitionTitle'
-                description:
-                  $ref: '#/components/schemas/competitionDescription'
-                admins:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/competitionAdmin'
-                openAt:
-                  $ref: '#/components/schemas/timestamp'
-                closedAt:
-                  $ref: '#/components/schemas/timestamp'
-              required:
-                - title
-                - description
-                - openAt
-                - closedAt
+              $ref: "#/components/schemas/Competition"
       responses:
-        '201':
-          description: 大会の作成に成功した。
+        "201":
+          description: |-
+            大会の作成に成功した。
           headers:
             Location:
               schema:
                 type: string
-                example: '/competitions/{competitionId}'
-              description: 作成したユーザのリソースの所在。
+                example: "/competitions/{competitionId}"
+              description: |-
+                作成した大会のリソースの所在。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Competition'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-  '/competitions/{competitionId}':
+                $ref: "#/components/schemas/Competition"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+  "/competitions/{competitionId}":
+    parameters:
+      - $ref: "#/components/parameters/competitionId"
     get:
       operationId: getCompetitionByCompetitionId
-      summary: '大会 {competitionId} の情報を取得する。'
-      description: |
+      summary: "大会 {competitionId} の情報を取得する。"
+      description: |-
         大会 {competitionId} の情報を取得する。
       tags:
         - competition
-      parameters:
-        - $ref: '#/components/parameters/competitionId'
       responses:
-        '200':
-          description: '大会 {competitionId} の大会情報の取得に成功した。'
+        "200":
+          description: |-
+            大会 {competitionId} の大会情報の取得に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Competition'
+                $ref: "#/components/schemas/Competition"
               examples: {}
-        '404':
-          description: '大会 {competitionId} が存在しない。'
+        "404":
+          description: |-
+            大会 {competitionId} が存在しない。
     put:
       operationId: putCompetition
-      summary: '大会 {competitionId} の情報を更新する。'
-      description: |
+      summary: "大会 {competitionId} の情報を更新する。"
+      description: |-
         大会 {competitionId} の情報を更新する。
       tags:
         - competition
-      parameters:
-        - $ref: '#/components/parameters/competitionId'
       responses:
-        '200':
-          description: 大会情報の更新に成功した。
+        "200":
+          description: |-
+            大会情報の更新に成功した。
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Competition'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: 大会情報の更新が禁止されている。認証ユーザが大会情報の更新権限を持たない場合に返る。
-        '404':
-          description: '大会 {competitionId} が存在しない。'
+                $ref: "#/components/schemas/Competition"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            大会情報の更新が禁止されている。認証ユーザが大会情報の更新権限を持たない場合に返る。
+        "404":
+          description: |-
+            大会 {competitionId} が存在しない。
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  $ref: '#/components/schemas/competitionTitle'
-                description:
-                  $ref: '#/components/schemas/competitionDescription'
-                admins:
-                  $ref: '#/components/schemas/competitionAdmin'
-                openAt:
-                  $ref: '#/components/schemas/timestamp'
-                closedAt:
-                  $ref: '#/components/schemas/timestamp'
+              $ref: "#/components/schemas/Competition"
     delete:
       operationId: deleteCompetition
-      summary: '大会 {competitionId} を削除する。'
-      description: |
+      summary: "大会 {competitionId} を削除する。"
+      description: |-
         大会 {competitionId} を削除する。
       tags:
         - competition
-      parameters:
-        - $ref: '#/components/parameters/competitionId'
       responses:
-        '204':
-          description: 大会の削除に成功した。
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: 大会の削除が禁止されている。認証ユーザが大会の削除権限を持たない場合に返る。
-        '404':
-          description: '大会 {competitionId} が存在しない。'
-  '/competitions/{competitionId}/quizzes':
+        "204":
+          description: |-
+            大会の削除に成功した。
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            大会の削除が禁止されている。認証ユーザが大会の削除権限を持たない場合に返る。
+        "404":
+          description: |-
+            大会 {competitionId} が存在しない。
+  "/competitions/{competitionId}/quizzes":
+    parameters:
+      - $ref: "#/components/parameters/competitionId"
     get:
       operationId: getQuizzesByCompetitionId
-      summary: '大会 {competitionId} のクイズ一覧を取得する。'
-      description: |
+      summary: "大会 {competitionId} のクイズ一覧を取得する。"
+      description: |-
         大会 {competitionId} のクイズ一覧を取得する。
       tags:
         - competition
       parameters:
-        - $ref: '#/components/parameters/competitionId'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: クイズ一覧の取得に成功した。
+        "200":
+          description: |-
+            クイズ一覧の取得に成功した。
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Quiz'
+                  $ref: "#/components/schemas/Quiz"
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: '大会 {competitionId} を閲覧する権限が、認証ユーザに与えられていない。'
-        '404':
-          description: '大会 {competitionId} が存在しない。'
-  '/competitions/{competitionId}/quizzes/{quizId}':
-    put:
-      operationId: putQuizByCompetitionId
-      summary: '大会 {competitionId} にクイズ {quizId} を追加または更新する。'
-      description: |
-        大会 {competitionId} にクイズ {quizId} を属性情報とともに追加するか、または属性情報を更新する。
-      tags:
-        - competition
-      parameters:
-        - $ref: '#/components/parameters/competitionId'
-        - $ref: '#/components/parameters/quizId'
-      responses:
-        '200':
-          description: クイズの属性情報の更新に成功した。
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/competitionQuiz'
-        '204':
-          description: 大会へのクイズの追加に成功した。
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: '大会 {competitionId} にクイズを追加するまたはクイズの属性情報を更新する権限が認証ユーザに与えられていない。'
-        '404':
-          description: '大会 {competitionId} が存在しない。'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                quizId:
-                  $ref: '#/components/schemas/quizId'
-                userName:
-                  $ref: '#/components/schemas/userName'
-    delete:
-      operationId: deleteQuizByCompetitionId
-      summary: '大会 {competitionId} のクイズからクイズ {quizId} を削除する。'
-      description: |
-        大会 {competitionId} のクイズからクイズ {quizId} を削除する。
-      tags:
-        - competition
-      parameters:
-        - $ref: '#/components/parameters/competitionId'
-        - $ref: '#/components/parameters/quizId'
-      responses:
-        '204':
-          description: '大会 {competitionId} のクイズからクイズ {quizId} を削除することに成功した。'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: '大会 {competitionId} からクイズを削除する権限が認証ユーザにない。'
-        '404':
-          description: '大会 {competitionId} または大会のクイズ中にクイズ {quizId} が存在しない。'
-  '/competitions/{competitionId}/answers':
+              $ref: "#/components/headers/cursorPaginationLink"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            大会 {competitionId} を閲覧する権限が、認証ユーザに与えられていない。
+        "404":
+          description: |-
+            大会 {competitionId} が存在しない。
+  "/competitions/{competitionId}/answers":
+    parameters:
+      - $ref: "#/components/parameters/competitionId"
     get:
       operationId: getAnswersByCompetitionId
-      summary: '大会 {competitionId} のクイズへの回答一覧を取得する。'
-      description: |
+      summary: "大会 {competitionId} のクイズへの回答一覧を取得する。"
+      description: |-
         大会 {competitionId} のクイズへの回答一覧を取得する。
       tags:
         - competition
       parameters:
-        - $ref: '#/components/parameters/competitionId'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: 回答一覧の取得に成功した。
+        "200":
+          description: |-
+            回答一覧の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Answer'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: '大会 {competitionId} を閲覧する権限が、認証ユーザに与えられていない。'
-        '404':
-          description: '大会 {competitionId} が存在しない。'
-  '/competitions/{competitionId}/participants':
+                  $ref: "#/components/schemas/Answer"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            大会 {competitionId} を閲覧する権限が、認証ユーザに与えられていない。
+        "404":
+          description: |-
+            大会 {competitionId} が存在しない。
+  "/competitions/{competitionId}/participants":
+    parameters:
+      - $ref: "#/components/parameters/competitionId"
     get:
       operationId: getParticipantsByCompetitionId
-      summary: '大会 {competitionId} の参加ユーザ一覧とそのスコア情報を取得する。'
-      description: |
+      summary: "大会 {competitionId} の参加ユーザ一覧とそのスコア情報を取得する。"
+      description: |-
         大会 {competitionId} の参加ユーザ一覧とそのスコア情報を取得する。
       tags:
         - competition
       parameters:
-        - $ref: '#/components/parameters/competitionId'
-        - $ref: '#/components/parameters/paginationCursorMaxId'
-        - $ref: '#/components/parameters/paginationCursorSinceId'
-        - $ref: '#/components/parameters/paginationLimit'
+        - $ref: "#/components/parameters/paginationCursorMaxId"
+        - $ref: "#/components/parameters/paginationCursorSinceId"
+        - $ref: "#/components/parameters/paginationLimit"
       responses:
-        '200':
-          description: 参加ユーザ一覧とそのスコア情報の取得に成功した。
+        "200":
+          description: |-
+            参加ユーザ一覧とそのスコア情報の取得に成功した。
           headers:
             Link:
-              $ref: '#/components/headers/cursorPaginationLink'
+              $ref: "#/components/headers/cursorPaginationLink"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: '大会 {competitionId} を閲覧する権限が、認証ユーザに与えられていない。'
-        '404':
-          description: '大会 {competitionId} が存在しない。'
-  '/competitions/{competitionId}/participants/{participantName}':
+                  $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            大会 {competitionId} を閲覧する権限が、認証ユーザに与えられていない。
+        "404":
+          description: |-
+            大会 {competitionId} が存在しない。
+  "/competitions/{competitionId}/participants/{participantId}":
+    parameters:
+      - $ref: "#/components/parameters/competitionId"
+      - name: participantId
+        in: path
+        required: true
+        description: |-
+          参加者のユーザID。
+        schema:
+          $ref: "#/components/schemas/userId"
     put:
       operationId: putParticipantByCompetitionId
-      summary: '大会 {competitionId} の参加ユーザにユーザ {participantName} を追加する。'
-      description: |
-        大会 {competitionId} の参加ユーザにユーザ {participantName} を追加する。
+      summary: "大会 {competitionId} の参加ユーザにユーザ {participantId} を追加する。"
+      description: |-
+        大会 {competitionId} の参加ユーザにユーザ {participantId} を追加する。
       tags:
         - competition
-      parameters:
-        - $ref: '#/components/parameters/competitionId'
-        - $ref: '#/components/parameters/participantName'
       responses:
-        '204':
-          description: '大会 {competitionId} の参加ユーザにユーザ {participantName} を追加することに成功した。'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: |
-            大会 {competitionId} に参加する権限がユーザ {participantName} にない。
-            または大会 {competitionId} にユーザ {participantName} を参加させる権限が認証ユーザにない。
-        '404':
-          description: '大会 {competitionId} またはユーザ {participantName} が存在しない。'
+        "204":
+          description: |-
+            大会 {competitionId} の参加ユーザにユーザ {participantId} を追加することに成功した。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            大会 {competitionId} に参加する権限がユーザ {participantId} にない。
+            または大会 {competitionId} にユーザ {participantId} を参加させる権限が認証ユーザにない。
+        "404":
+          description: |-
+            大会 {competitionId} またはユーザ {participantId} が存在しない。
     delete:
       operationId: deleteParticipantByCompetitionId
-      summary: '大会 {competitionId} の参加ユーザからユーザ {participantName} を削除する。'
-      description: |
-        大会 {competitionId} の参加ユーザからユーザ {participantName} を削除する。
+      summary: "大会 {competitionId} の参加ユーザからユーザ {participantId} を削除する。"
+      description: |-
+        大会 {competitionId} の参加ユーザからユーザ {participantId} を削除する。
       tags:
         - competition
-      parameters:
-        - $ref: '#/components/parameters/competitionId'
-        - $ref: '#/components/parameters/participantName'
       responses:
-        '204':
-          description: |
-            大会 {competitionId} の参加ユーザから {participantName} を削除することに成功した。
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          description: |
-            大会 {competitionId} からユーザ {participantName} を不参加にする権限が認証ユーザにない。
-            - 認証ユーザが大会のオーナではなく、ユーザ {participantName} でもない。
-            - 認証ユーザがユーザ {participantName} であるが、大会開始時刻以後である。
-        '404':
-          description: '大会 {competitionId} または大会の参加者中にユーザ {participantName} が存在しない。'
+        "204":
+          description: |-
+            大会 {competitionId} の参加ユーザから {participantId} を削除することに成功した。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            大会 {competitionId} からユーザ {participantId} を不参加にする権限が認証ユーザにない。
+            - 認証ユーザが大会のオーナではなく、ユーザ {participantId} でもない。
+            - 認証ユーザがユーザ {participantId} であるが、大会開始時刻以後である。
+        "404":
+          description: |-
+            大会 {competitionId} または大会の参加者中にユーザ {participantId} が存在しない。
 components:
   headers:
     limitOffsetPaginationLink:
       schema:
         type: string
-        example: |
+        example: |-
           <?limit=25&offset=50>; rel="next", <?limit=25&offset=0>; rel="prev"
-      description: limit/offset ページネーション用の Link ヘッダ。
+      description: |-
+        limit/offset ページネーション用の Link ヘッダ。
     limitOffsetPaginationXTotalCount:
       schema:
-        type: number
+        type: integer
+        format: int64
         example: 108
-      description: limit/offset ページネーション用の X-Total-Count ヘッダ。
+      description: |-
+        limit/offset ページネーション用の X-Total-Count ヘッダ。
     cursorPaginationLink:
       schema:
         type: string
-        example: |
+        example: |-
           <?limit=25&sinceId=1379875089861070849>
-      description: cursor ページネーション用の Link ヘッダ。
+      description: |-
+        cursor ページネーション用の Link ヘッダ。
   responses:
     BadRequestError:
-      description: リクエストの構文が不正である。
+      description: |-
+        リクエストの構文が不正である。
     UnauthorizedError:
-      description: アクセストークンが与えられていないまたは不正である。
+      description: |-
+        アクセストークンが与えられていないまたは不正である。
     UnsupportedMediaTypeError:
-      description: Content-Type に application/json 以外が与えられている。
+      description: |-
+        Content-Type に application/json 以外が与えられている。
   schemas:
-    timestamp:
-      type: number
-      description: 日時を表すエポックミリ秒。
-      example: 1600000000000
     User:
       type: object
-      properties:
-        name:
-          $ref: '#/components/schemas/userName'
-        profile:
-          $ref: '#/components/schemas/userProfile'
-        createdAt:
-          $ref: '#/components/schemas/timestamp'
-        updatedAt:
-          $ref: '#/components/schemas/timestamp'
-    userName:
-      type: string
-      example: yantene
-    userPassphrase:
-      type: string
-      example: P455phr453!
-    userProfile:
-      type: string
-      example: |
-        これはプロフィールです。
-        これはプロフィールです。
-        これはプロフィールです。
-        これはプロフィールです。
-    Group:
-      type: object
-      properties:
-        name:
-          $ref: '#/components/schemas/groupName'
-        description:
-          $ref: '#/components/schemas/groupDescription'
-        createdAt:
-          $ref: '#/components/schemas/timestamp'
-        updatedAt:
-          $ref: '#/components/schemas/timestamp'
-    groupName:
-      type: string
-      example: abc_quiz_club
-    groupDescription:
-      type: string
-      example: |
-        これはグループの説明です。
-        これはグループの説明です。
-        これはグループの説明です。
-        これはグループの説明です。
-    Quiz:
-      type: object
+      title: User
+      description: |-
+        ユーザオブジェクト。
       properties:
         id:
-          $ref: '#/components/schemas/quizId'
-        author:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/userId"
+          readOnly: true
+        name:
+          $ref: "#/components/schemas/userName"
+        email:
+          $ref: "#/components/schemas/userEmail"
+        displayName:
+          $ref: "#/components/schemas/userDisplayName"
+        pasphrase:
+          $ref: "#/components/schemas/userPassphrase"
+          writeOnly: true
+        profile:
+          $ref: "#/components/schemas/userProfile"
+        createdAt:
+          $ref: "#/components/schemas/createdAt"
+          readOnly: true
+        updatedAt:
+          $ref: "#/components/schemas/updatedAt"
+          readOnly: true
+      x-tags:
+        - user
+    userId:
+      type: string
+      format: cuid
+      title: userId
+      description: |-
+        ユーザID。 CUID で生成される。
+        変更不可なので、ユーザの識別にはこれを用いる。
+      example: cjld2cjxh0000qzrmn831i7rn
+      x-tags:
+        - user
+    userName:
+      type: string
+      pattern: '^\w{3,20}$'
+      title: userName
+      description: |-
+        ユーザ名。全ユーザ間で一意だが、変更可能。
+        UI 上に表示される名前はこれか userDisplayName を使う。
+      example: yantene
+      x-tags:
+        - user
+    userEmail:
+      type: string
+      format: email
+      title: userEmail
+      description: |-
+        ユーザのメールアドレス。全ユーザ間で一意だが、変更可能。
+        本人以外がユーザオブジェクトを表示した場合には表示されない。
+      example: yantene@example.jp
+      x-tags:
+        - user
+    userDisplayName:
+      type: string
+      title: userDisplayName
+      description: |-
+        ユーザの表示名。印字可能な任意の文字列を指定可能。
+        UI 上に表示される名前はこれか userName を使う。
+        一意でないので、これを識別子として用いることはできない。
+      example: やんてね
+      x-tags:
+        - user
+    userPassphrase:
+      type: string
+      format: password
+      title: userPassphrase
+      description: |-
+        ユーザのパスフレーズ。
+      example: P455phr453!
+      x-tags:
+        - user
+    userProfile:
+      type: string
+      title: userProfile
+      description: |-
+        ユーザのプロフィール。
+      example: |-
+        これはプロフィールです。
+        これはプロフィールです。
+        これはプロフィールです。
+        これはプロフィールです。
+      x-tags:
+        - user
+    Group:
+      type: object
+      title: Group
+      description: |-
+        グループオブジェクト。ユーザを束ねる単位。
+      properties:
+        id:
+          $ref: "#/components/schemas/groupId"
+          readOnly: true
+        name:
+          $ref: "#/components/schemas/groupName"
+        description:
+          $ref: "#/components/schemas/groupDescription"
+        createdById:
+          $ref: "#/components/schemas/userId"
+          writeOnly: true
+        createdBy:
+          $ref: "#/components/schemas/User"
+          readOnly: true
+        memberCount:
+          $ref: "#/components/schemas/groupMemberCount"
+          readOnly: true
+        memberAddable:
+          $ref: "#/components/schemas/groupMemberAddable"
+        createdAt:
+          $ref: "#/components/schemas/createdAt"
+          readOnly: true
+        updatedAt:
+          $ref: "#/components/schemas/updatedAt"
+          readOnly: true
+      x-tags:
+        - group
+    groupId:
+      type: string
+      format: cuid
+      title: groupId
+      description: |-
+        グループID。 CUID で生成される。
+        変更不可なので、グループの識別にはこれを用いる。
+      example: cjld2cjxh0000qzrmn831i7rn
+      x-tags:
+        - group
+    groupName:
+      type: string
+      pattern: '^\w{3,20}$'
+      title: groupName
+      description: |-
+        グループ名。全グループ間で一意だが、変更可能。
+        UI 上に表示される名前はこれとなる。
+      example: abc_quiz_club
+      x-tags:
+        - group
+    groupDescription:
+      type: string
+      title: groupDescription
+      description: |-
+        グループの説明。
+      example: |-
+        これはグループの説明です。
+        これはグループの説明です。
+        これはグループの説明です。
+        これはグループの説明です。
+      x-tags:
+        - group
+    groupMemberCount:
+      type: integer
+      format: int64
+      title: groupMemberCount
+      description: |-
+        追加されているメンバー数。
+      example: 15
+      x-tags:
+        - group
+    groupMemberAddable:
+      type: boolean
+      title: groupMemberAddable
+      description: |-
+        メンバーがメンバーを追加できるなら true。
+      default: false
+      example: true
+      x-tags:
+        - group
+    Quiz:
+      type: object
+      title: Quiz
+      description: |-
+        クイズオブジェクト。
+      properties:
+        id:
+          $ref: "#/components/schemas/quizId"
+          readOnly: true
+        createdById:
+          $ref: "#/components/schemas/userId"
+          writeOnly: true
+        createdBy:
+          $ref: "#/components/schemas/User"
+          readOnly: true
         title:
-          $ref: '#/components/schemas/quizTitle'
-        abstract:
-          $ref: '#/components/schemas/quizAbstract'
+          $ref: "#/components/schemas/quizTitle"
         statement:
-          $ref: '#/components/schemas/quizStatement'
+          $ref: "#/components/schemas/quizStatement"
+        flagAffixes:
+          $ref: "#/components/schemas/quizFlagAffixes"
         score:
-          $ref: '#/components/schemas/quizScore'
+          $ref: "#/components/schemas/quizScore"
         flag:
-          $ref: '#/components/schemas/quizFlag'
+          $ref: "#/components/schemas/quizFlag"
+        explanation:
+          $ref: "#/components/schemas/quizExplanation"
+        public:
+          $ref: "#/components/schemas/quizPublic"
+        publishedAt:
+          $ref: "#/components/schemas/quizPublishedAt"
+        answerCount:
+          $ref: "#/components/schemas/quizAnswerCount"
+          readOnly: true
         tagNames:
           type: array
           items:
-            $ref: '#/components/schemas/tagName'
-        targetUserNames:
-          type: array
-          items:
-            $ref: '#/components/schemas/userName'
-        targetGroupNames:
-          type: array
-          items:
-            $ref: '#/components/schemas/groupName'
-        published:
-          $ref: '#/components/schemas/quizPublished'
-        publishedAt:
-          $ref: '#/components/schemas/timestamp'
+            $ref: "#/components/schemas/tagName"
+          readOnly: true
+        competitionId:
+          $ref: "#/components/schemas/competitionId"
         createdAt:
-          $ref: '#/components/schemas/timestamp'
+          $ref: "#/components/schemas/createdAt"
+          readOnly: true
         updatedAt:
-          $ref: '#/components/schemas/timestamp'
+          $ref: "#/components/schemas/updatedAt"
+          readOnly: true
+      x-tags:
+        - quiz
     quizId:
       type: integer
+      format: int64
+      title: quizId
+      description: |-
+        クイズID。 Snowflake ID で生成される。
       example: 1379875089861070800
+      x-tags:
+        - quiz
     quizTitle:
       type: string
+      title: quizTitle
+      description: |-
+        クイズタイトル。印字可能な任意の文字列が使用可能。
+        TODO: 長さ制限は別途検討
       example: パンはパンでも・・・？
-    quizAbstract:
-      type: string
-      example: キミのパンに対する情熱が試されるッ！！！
+      x-tags:
+        - quiz
     quizStatement:
       type: string
-      example: |
+      title: quizStatement
+      description: |-
+        クイズ本文。
+        TODO: マークアップの方法は別途検討。 commonmark かな。
+      example: |-
         パンはパンでも、食べられないパンはなんだろう。
-        FLAG{食べられないパンの名前} の形式で、波括弧内はすべてカタカナで回答すること。
+        フラグは FLAG{食べられないパンの名前} の形式で与えられる。
+        波括弧内はすべてカタカナで回答すること。
+      x-tags:
+        - quiz
+    quizFlagAffixes:
+      type: object
+      title: quizFlagAffixes
+      description: |-
+        正解フラグの接頭辞と接尾辞。
+      properties:
+        prefix:
+          type: string
+          example: "FLAG{"
+        suffix:
+          type: string
+          example: "}"
+      x-tags:
+        - quiz
     quizScore:
       type: integer
+      format: int64
+      title: quizScore
+      description: |-
+        クイズの最大得点。
+        回答回数や経過時間に応じてこの点数以下の点数を獲得することができる。
       example: 100
+      x-tags:
+        - quiz
     quizFlag:
       type: string
-      example: 'FLAG{フライパン}'
-    quizPublished:
+      title: quizFlag
+      description: |-
+        クイズの正解フラグ。
+        改行を含まない任意の文字列が使用可能。
+      example: "フライパン"
+      x-tags:
+        - quiz
+    quizExplanation:
+      type: string
+      title: quizExplanation
+      description: |-
+        問題の解説文。
+        問題正解後か、または投了後に閲覧可能となる。
+      example: |-
+        フライパンは英語に直すと frying pan となる。
+        fry は炒める、pan はなべの意味である。
+        すなわちこの問題は、ポルトガル語 pão に由来するところのパンを答えさせるのではなく、
+        英語のなべの意味のパンを答えさせる問題だったのである。
+      x-tags:
+        - quiz
+    quizPublic:
       type: boolean
+      title: quizPublic
+      description: |-
+        true ならユーザ全員が閲覧・回答可能、false ならフォロワーのみ閲覧回答可能。
       example: true
+      x-tags:
+        - quiz
+    quizPublishedAt:
+      type: integer
+      format: int64
+      title: quizPublishedAt
+      description: |-
+        公開日時。エポックミリ秒。未来の日時のみ指定可能。
+        competitionId が指定されている場合、大会開催期間のみ指定可能。
+      example: 1600000000000
+      x-tags:
+        - quiz
+    quizAnswerCount:
+      type: integer
+      format: int64
+      title: quizAnswerCount
+      description: |-
+        回答数。
+      example: 15
+      x-tags:
+        - quiz
     Answer:
       type: object
+      title: Answer
+      description: |-
+        回答オブジェクト。
       properties:
         id:
-          $ref: '#/components/schemas/answerId'
-        author:
-          $ref: '#/components/schemas/User'
-        targetQuiz:
-          $ref: '#/components/schemas/Quiz'
+          $ref: "#/components/schemas/answerId"
+          readOnly: true
+        createdBy:
+          $ref: "#/components/schemas/User"
+          readOnly: true
+        quiz:
+          $ref: "#/components/schemas/Quiz"
+          readOnly: true
         count:
-          $ref: '#/components/schemas/answerCount'
-        correct:
-          $ref: '#/components/schemas/answerCorrect'
-        score:
-          $ref: '#/components/schemas/answerScore'
+          $ref: "#/components/schemas/answerCount"
+          readOnly: true
         flag:
-          $ref: '#/components/schemas/answerFlag'
-        answeredAt:
-          $ref: '#/components/schemas/timestamp'
+          $ref: "#/components/schemas/answerFlag"
+        correct:
+          $ref: "#/components/schemas/answerCorrect"
+          readOnly: true
+        score:
+          $ref: "#/components/schemas/answerScore"
+          readOnly: true
+        createdAt:
+          $ref: "#/components/schemas/createdAt"
+          readOnly: true
+        updatedAt:
+          $ref: "#/components/schemas/updatedAt"
+          readOnly: true
+      x-tags:
+        - answer
     answerId:
       type: integer
+      format: int64
+      title: answerId
+      description: |-
+        回答ID。 Snowflake ID で生成される。
       example: 1379875089861070800
+      x-tags:
+        - answer
     answerCount:
       type: integer
-      description: |
+      format: int64
+      title: answerCount
+      description: |-
         このユーザにとってこのクイズに対する何回目の回答か。
       example: 3
-    answerCorrect:
-      type: boolean
-      description: |
-        正答なら true、誤答なら false。
-      example: false
-    answerScore:
-      type: integer
-      description: |
-        この回答によって獲得したスコア。
-      example: 0
+      x-tags:
+        - answer
     answerFlag:
       type: string
-      example: 'FLAG{ザンパン}'
+      title: answerFlag
+      description: |-
+        回答フラグ。
+      example: "ザンパン"
+      x-tags:
+        - answer
+    answerCorrect:
+      type: boolean
+      title: answerCorrect
+      description: |-
+        正答なら true、誤答なら false。
+      example: false
+      x-tags:
+        - answer
+    answerScore:
+      type: integer
+      format: int64
+      title: answerScore
+      description: |-
+        この回答によって獲得したスコア。
+      example: 0
+      x-tags:
+        - answer
     Tag:
       type: object
+      title: Tag
+      description: |-
+        タグオブジェクト。
       properties:
         name:
-          $ref: '#/components/schemas/tagName'
+          $ref: "#/components/schemas/tagName"
+          readOnly: true
         createdAt:
-          $ref: '#/components/schemas/timestamp'
+          $ref: "#/components/schemas/createdAt"
+          readOnly: true
         updatedAt:
-          $ref: '#/components/schemas/timestamp'
+          $ref: "#/components/schemas/updatedAt"
+          readOnly: true
+      x-tags:
+        - tag
     tagName:
       type: string
+      title: tagName
+      description: |-
+        タグ文字列。
       example: nazonazo
+      x-tags:
+        - tag
     Competition:
       type: object
-      description: |
+      title: Competition
+      description: |-
         大会。
         データベースのデータとしては参加者、クイズ、回答のリストが紐づくが、
         これをこのオブジェクトに含めるとものすごく大きくなってしまいかねないので件数のみに留める。
       properties:
         id:
-          $ref: '#/components/schemas/competitionId'
+          $ref: "#/components/schemas/competitionId"
+          readOnly: true
         title:
-          $ref: '#/components/schemas/competitionTitle'
+          $ref: "#/components/schemas/competitionTitle"
         description:
-          $ref: '#/components/schemas/competitionDescription'
-        owner:
-          $ref: '#/components/schemas/User'
-        admins:
-          type: array
-          items:
-            $ref: '#/components/schemas/competitionAdmin'
+          $ref: "#/components/schemas/competitionDescription"
+        period:
+          $ref: "#/components/schemas/competitionPeriod"
+        createdById:
+          $ref: "#/components/schemas/userId"
+          writeOnly: true
+        createdBy:
+          $ref: "#/components/schemas/User"
+          readOnly: true
+        participantGroupId:
+          $ref: "#/components/schemas/groupId"
+          writeOnly: true
+        participantGroup:
+          $ref: "#/components/schemas/Group"
+          readOnly: true
         participantsCount:
-          type: number
-          example: 10
+          $ref: "#/components/schemas/competitionParticipantsCount"
+          readOnly: true
         quizzesCount:
-          type: number
-          example: 10
+          $ref: "#/components/schemas/competitionQuizzesCount"
+          readOnly: true
         answersCount:
-          type: number
-          example: 25
-        openAt:
-          $ref: '#/components/schemas/timestamp'
-        closedAt:
-          $ref: '#/components/schemas/timestamp'
+          $ref: "#/components/schemas/competitionAnswersCount"
+          readOnly: true
         createdAt:
-          $ref: '#/components/schemas/timestamp'
+          $ref: "#/components/schemas/createdAt"
+          readOnly: true
         updatedAt:
-          $ref: '#/components/schemas/timestamp'
+          $ref: "#/components/schemas/updatedAt"
+          readOnly: true
+      x-tags:
+        - competition
     competitionId:
       type: integer
+      format: int64
+      title: competitionId
+      description: |-
+        大会ID。 Snowflake ID で生成される。
       example: 1379875089861070800
+      x-tags:
+        - competition
     competitionTitle:
       type: string
+      title: competitionTitle
+      description: |-
+        大会名。
       example: 春のさわやかクイズチャレンジ！
+      x-tags:
+        - competition
     competitionDescription:
       type: string
-      example: |
+      title: competitionDescription
+      description: |-
+        大会の説明。
+      example: |-
         春は出会いと別れの季節。
         そんな時節にぴったりのクイズをたくさん用意しました！
-    competitionAdmin:
+      x-tags:
+        - competition
+    competitionPeriod:
       type: object
+      title: competitionPeriod
+      description: |-
+        大会の開催期間。
       properties:
-        userName:
-          $ref: '#/components/schemas/userName'
-        updatable:
-          type: boolean
-          description: |
-            大会情報 (大会名・概要・開催期間) の更新権限を持っていれば true。
-        deletable:
-          type: boolean
-          description: |
-            大会の削除権限を持っていれば true。
-        adminManageable:
-          type: boolean
-          description: |
-            オーナユーザの追加削除権限を持っていれば true。
-        quizAddable:
-          type: boolean
-          description: |
-            問題の追加権限および自分の追加した問題の削除権限を持っていれば true。
-        quizManageable:
-          type: boolean
-          description: |
-            すべての問題の削除権限を持っていれば true。
-    competitionQuiz:
-      type: object
-      properties:
-        quiz:
-          $ref: '#/components/schemas/Quiz'
-        adderName:
-          $ref: '#/components/schemas/userName'
+        openAt:
+          type: integer
+          format: int64
+          example: 1600000000000
+        closedAt:
+          type: integer
+          format: int64
+          example: 1610000000000
+      x-tags:
+        - competition
+    competitionParticipantsCount:
+      type: integer
+      format: int64
+      title: competitionParticipantsCount
+      description: |-
+        大会の参加者数。
+      example: 30
+      x-tags:
+        - competition
+    competitionQuizzesCount:
+      type: integer
+      format: int64
+      title: competitionQuizzesCount
+      description: |-
+        大会のクイズ数。
+      example: 15
+      x-tags:
+        - competition
+    competitionAnswersCount:
+      type: integer
+      format: int64
+      title: competitionAnswersCount
+      description: |-
+        大会の回答数。
+      example: 40
+      x-tags:
+        - competition
+    createdAt:
+      type: integer
+      format: int64
+      title: createdAt
+      description: |-
+        作成日時。エポックミリ秒。
+      example: 1600000000000
+      readOnly: true
+      x-tags:
+        - common
+    updatedAt:
+      type: integer
+      format: int64
+      title: updatedAt
+      description: |-
+        更新日時。エポックミリ秒。
+      example: 1600000000000
+      readOnly: true
+      x-tags:
+        - common
   parameters:
+    # common
     paginationLimit:
       name: limit
       in: query
-      description: |
+      description: |-
         ページネーションの取得件数。
       schema:
         type: integer
@@ -1541,7 +1914,7 @@ components:
     paginationOffset:
       name: offset
       in: query
-      description: |
+      description: |-
         ページネーションのオフセット。
       schema:
         type: integer
@@ -1550,7 +1923,7 @@ components:
     paginationCursorSinceId:
       name: sinceId
       in: query
-      description: |
+      description: |-
         ページネーションで、この値より大きいデータを取得する。
         新しい方から古い方に向かってデータを取得する際に利用する。
         maxId とは排他。
@@ -1560,109 +1933,127 @@ components:
     paginationCursorMaxId:
       name: maxId
       in: query
-      description: |
+      description: |-
         ページネーションで、この値以下のデータを取得する。
         古い方から新しい方に向かってデータを取得する際に利用する。
         sinceId とは排他。
       schema:
         type: integer
         format: int64
+    # query
     userNames:
       name: userNames
       in: query
-      description: 取得する複数のユーザのユーザ名。
+      description: |-
+        取得する複数のユーザのユーザ名。
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/userName'
+          $ref: "#/components/schemas/userName"
+    userIds:
+      name: userIds
+      in: query
+      description: |-
+        取得する複数のユーザのユーザID。
+      schema:
+        type: array
+        items:
+          $ref: "#/components/schemas/userId"
     groupNames:
       name: groupNames
       in: query
-      description: 取得する複数のグループのグループ名。
+      description: |-
+        取得する複数のグループのグループ名。
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/groupName'
+          $ref: "#/components/schemas/groupName"
+    groupIds:
+      name: groupIds
+      in: query
+      description: |-
+        取得する複数のグループのグループID。
+      schema:
+        type: array
+        items:
+          $ref: "#/components/schemas/groupId"
     quizIds:
       name: quizIds
       in: query
-      description: 取得する複数のクイズの識別子。
+      description: |-
+        取得する複数のクイズの識別子。
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/quizId'
+          $ref: "#/components/schemas/quizId"
     answerIds:
       name: answerIds
       in: query
-      description: 取得する複数の解答の識別子。
+      description: |-
+        取得する複数の解答の識別子。
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/answerId'
+          $ref: "#/components/schemas/answerId"
     competitionIds:
       name: competitionIds
       in: query
-      description: 取得する複数の大会の識別子。
+      description: |-
+        取得する複数の大会の識別子。
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/competitionId'
-    userName:
-      name: userName
+          $ref: "#/components/schemas/competitionId"
+    # path
+    userId:
+      name: userId
       in: path
       required: true
-      description: 取得するユーザのユーザ名。
+      description: |-
+        取得するユーザのユーザID。
       schema:
-        $ref: '#/components/schemas/userName'
-    followeeName:
-      name: followeeName
+        $ref: "#/components/schemas/userId"
+        type: string
+    groupId:
+      name: groupId
       in: path
       required: true
-      description: フォロー対象のユーザのユーザ名。
+      description: |-
+        取得するグループのグループID。
       schema:
-        $ref: '#/components/schemas/userName'
-    groupName:
-      name: groupName
-      in: path
-      required: true
-      description: 取得するグループのグループ名。
-      schema:
-        $ref: '#/components/schemas/groupName'
+        $ref: "#/components/schemas/groupId"
     quizId:
       name: quizId
       in: path
       required: true
-      description: 取得するクイズの識別子。
+      description: |-
+        取得するクイズの識別子。
       schema:
-        $ref: '#/components/schemas/quizId'
+        $ref: "#/components/schemas/quizId"
     answerId:
       name: answerId
       in: path
       required: true
-      description: 取得する回答の識別子。
+      description: |-
+        取得する回答の識別子。
       schema:
-        $ref: '#/components/schemas/answerId'
+        $ref: "#/components/schemas/answerId"
     tagName:
       name: tagName
       in: path
       required: true
-      description: 取得するタグのタグ名。
+      description: |-
+        取得するタグのタグ名。
       schema:
-        $ref: '#/components/schemas/tagName'
+        $ref: "#/components/schemas/tagName"
     competitionId:
       name: competitionId
       in: path
       required: true
-      description: 取得する大会の大会名。
+      description: |-
+        取得する大会の大会名。
       schema:
-        $ref: '#/components/schemas/competitionId'
-    participantName:
-      name: participantName
-      in: path
-      required: true
-      description: 大会参加ユーザのユーザ名。
-      schema:
-        $ref: '#/components/schemas/userName'
+        $ref: "#/components/schemas/competitionId"
   securitySchemes:
     SESSIONID:
       name: JWT Session token

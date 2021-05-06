@@ -7,8 +7,140 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Task {
-  id    Int     @id @default(autoincrement())
-  label String
-  done  Boolean @default(false)
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  quizzes                  Quiz[]
+  answer                   Answer[]
+  createdGroups            Group[]       @relation("CreatedGroups")
+  memberGroups             Group[]       @relation("GroupMemberRelation")
+  createdCompetitions      Competition[] @relation("CreatedCompetitions")
+  participatedCompetitions Competition[] @relation("CompetitionParticipantsRelation")
+
+  // unique keys
+  name  String @unique /// ユーザ名
+  email String @unique /// メールアドレス
+
+  /// ハッシュ化されたパスフレーズ
+  hashedPassphrase String
+  /// 表示名
+  /// NULL の場合 name が表示名扱いになる
+  displayName      String?
+  /// プロフィール
+  profile          String  @default("")
+}
+
+model Group {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  createdBy                  User          @relation(name: "CreatedGroups", fields: [createdById], references: [id])
+  createdById                String
+  members                    User[]        @relation("GroupMemberRelation")
+  participatableCompetitions Competition[]
+
+  /// グループ名
+  name          String  @unique
+  /// 説明
+  description   String  @default("")
+  /// true ならばメンバーはメンバーを追加できる
+  memberAddable Boolean @default(false)
+}
+
+model Quiz {
+  id        BigInt   @id /// Snowflake id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  createdBy     User         @relation(fields: [createdById], references: [id])
+  createdById   String
+  answers       Answer[]
+  tags          Tag[]
+  competition   Competition? @relation(fields: [competitionId], references: [id])
+  competitionId BigInt?
+
+  /// タイトル
+  title       String
+  /// 問題文
+  statement   String
+  /// 正解フラグの接頭辞
+  flagPrefix  String
+  /// 正解フラグの接尾辞
+  flagSuffix  String
+  /// 最大得点
+  score       Int
+  /// 正解
+  flag        String
+  /// 解説
+  explanation String
+  /// 公開日時
+  /// createdAt 以上の値のみ指定可能。
+  /// competitionId が指定されている場合、大会開催期間のみ指定可能。
+  publishedAt DateTime
+  /// true ならユーザ全員が閲覧・回答可能、false ならフォロワーのみ閲覧・回答可能。
+  /// competitionId が指定されている場合、大会開催期間は参加者のみ閲覧・回答可能となり、その後はこの値に従う。
+  public      Boolean
+}
+
+model Answer {
+  id        BigInt   @id /// Snowflake id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+  quiz        Quiz   @relation(fields: [quizId], references: [id])
+  quizId      BigInt
+
+  /// true ならば投了
+  resignation Boolean
+  /// 回答フラグ
+  /// resignation が true なら NULL。
+  flag        String?
+  /// true ならば正解している。
+  /// resignation が true なら NULL。
+  correct     Boolean?
+  /// 獲得点数
+  score       Int
+}
+
+model Tag {
+  name      String   @id /// タグ名
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  quizzes Quiz[]
+}
+
+model Competition {
+  id        BigInt   @id /// Snowflake id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relations
+  createdBy          User    @relation(name: "CreatedCompetitions", fields: [createdById], references: [id])
+  createdById        String
+  quizzes            Quiz[]
+  participantGroup   Group?  @relation(fields: [participantGroupId], references: [id])
+  participantGroupId String?
+  participants       User[]  @relation("CompetitionParticipantsRelation")
+
+  /// 大会名
+  title                   String
+  /// 説明
+  description             String
+  /// 開始日時
+  openAt                  DateTime
+  /// 終了日時
+  closedAt                DateTime
+  /// true なら参加者も問題を追加可能になる。
+  participantsQuizAddable Boolean
 }
