@@ -852,10 +852,45 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "403":
           description: |-
-            クイズへの回答権限がログインユーザにない。
+            以下のような理由で、回答が禁止されている。
+            - このクイズへの回答権限がログインユーザにない。
+            - このクイズにすでに正解している。
+            - このクイズにすでに投了している。
         "404":
           description: |-
             クイズ {quizId} が存在しない。
+  "/quizzes/{quizId}/resigners/{resignerId}":
+    parameters:
+      - $ref: "#/components/parameters/quizId"
+      - name: resignerId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/userId"
+    put:
+      operationId: putCapitulantByQuizId
+      summary: クイズに投了する。
+      description: |-
+        クイズ {quizId} に対しユーザ {resignerId} が投了する。
+      tags:
+        - quiz
+      responses:
+        "204":
+          description: |-
+            ユーザ {resignerId} が クイズ {quizId} に対して投了に成功した。
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          description: |-
+            以下のような理由で、投了が禁止されている。
+            - {resignerId} に自分以外を指定している。
+            - このクイズにすでに正解している。
+            - このクイズにすでに投了している。
+        "404":
+          description: |-
+            クイズ {quizId} またはユーザ {resignerId} が存在しない。
   /answers:
     get:
       operationId: getAnswers
@@ -1584,7 +1619,7 @@ components:
       title: quizExplanation
       description: |-
         問題の解説文。
-        問題正解後か、または降参後に閲覧可能となる。
+        問題正解後か、または投了後に閲覧可能となる。
       example: |-
         フライパンは英語に直すと frying pan となる。
         fry は炒める、pan はなべの意味である。
