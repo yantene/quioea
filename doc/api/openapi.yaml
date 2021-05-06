@@ -2048,14 +2048,6 @@ components:
         取得する大会の大会名。
       schema:
         $ref: "#/components/schemas/competitionId"
-    participantName:
-      name: participantName
-      in: path
-      required: true
-      description: |-
-        大会参加ユーザのユーザ名。
-      schema:
-        $ref: "#/components/schemas/userName"
   securitySchemes:
     SESSIONID:
       name: JWT Session token
