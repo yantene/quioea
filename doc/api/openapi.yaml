@@ -196,7 +196,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/User"
-  "/users/{userId}":
+  /users/{userId}:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
@@ -268,7 +268,7 @@ paths:
         "404":
           description: |-
             ユーザ {userId} が存在しない。
-  "/users/{userId}/followees":
+  /users/{userId}/followees:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
@@ -301,7 +301,7 @@ paths:
         "404":
           description: |-
             ユーザ {userId} が存在しない。
-  "/users/{userId}/followees/{followeeId}":
+  /users/{userId}/followees/{followeeId}:
     parameters:
       - $ref: "#/components/parameters/userId"
       - name: followeeId
@@ -355,7 +355,7 @@ paths:
         "404":
           description: |-
             ユーザ {userId} または {followeeId} が存在しないか、{followeeId} をフォローしていない。
-  "/users/{userId}/followers":
+  /users/{userId}/followers:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
@@ -388,7 +388,7 @@ paths:
         "404":
           description: |-
             ユーザ {userId} が存在しない。
-  "/users/{userId}/quizzes":
+  /users/{userId}/quizzes:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
@@ -420,7 +420,7 @@ paths:
                   $ref: "#/components/schemas/Quiz"
         "400":
           $ref: "#/components/responses/BadRequestError"
-  "/users/{userId}/answers":
+  /users/{userId}/answers:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
@@ -513,7 +513,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Group"
-  "/groups/{groupId}":
+  /groups/{groupId}:
     parameters:
       - $ref: "#/components/parameters/groupId"
     get:
@@ -574,7 +574,7 @@ paths:
           description: |-
             グループ情報の更新が禁止されている。
             {groupId} がすでに存在しているグループで、認証ユーザがグループ {groupId} の管理ユーザでない場合に返る。
-  "/groups/{groupId}/users":
+  /groups/{groupId}/users:
     parameters:
       - $ref: "#/components/parameters/groupId"
     get:
@@ -607,7 +607,7 @@ paths:
         "404":
           description: |-
             グループ {groupId} が存在しない。
-  "/groups/{groupId}/users/{userId}":
+  /groups/{groupId}/users/{userId}:
     parameters:
       - $ref: "#/components/parameters/groupId"
       - $ref: "#/components/parameters/userId"
@@ -720,7 +720,7 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
-  "/quizzes/{quizId}":
+  /quizzes/{quizId}:
     parameters:
       - $ref: "#/components/parameters/quizId"
     get:
@@ -788,7 +788,7 @@ paths:
         "404":
           description: |-
             クイズ {quizId} が存在しない。
-  "/quizzes/{quizId}/answers":
+  /quizzes/{quizId}/answers:
     parameters:
       - $ref: "#/components/parameters/quizId"
     get:
@@ -856,12 +856,13 @@ paths:
           description: |-
             以下のような理由で、回答が禁止されている。
             - このクイズへの回答権限がログインユーザにない。
+            - このクイズの作者がセッションのユーザである。
             - このクイズにすでに正解している。
             - このクイズにすでに投了している。
         "404":
           description: |-
             クイズ {quizId} が存在しない。
-  "/quizzes/{quizId}/resigners/{resignerId}":
+  /quizzes/{quizId}/resigners/{resignerId}:
     parameters:
       - $ref: "#/components/parameters/quizId"
       - name: resignerId
@@ -926,7 +927,7 @@ paths:
                   $ref: "#/components/schemas/Answer"
         "400":
           $ref: "#/components/responses/BadRequestError"
-  "/answers/{answerId}":
+  /answers/{answerId}:
     parameters:
       - $ref: "#/components/parameters/answerId"
     get:
@@ -974,7 +975,7 @@ paths:
                   $ref: "#/components/schemas/Tag"
         "400":
           $ref: "#/components/responses/BadRequestError"
-  "/tags/{tagName}/quizzes":
+  /tags/{tagName}/quizzes:
     parameters:
       - $ref: "#/components/parameters/tagName"
     get:
@@ -1066,7 +1067,7 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
-  "/competitions/{competitionId}":
+  /competitions/{competitionId}:
     parameters:
       - $ref: "#/components/parameters/competitionId"
     get:
@@ -1137,7 +1138,7 @@ paths:
         "404":
           description: |-
             大会 {competitionId} が存在しない。
-  "/competitions/{competitionId}/quizzes":
+  /competitions/{competitionId}/quizzes:
     parameters:
       - $ref: "#/components/parameters/competitionId"
     get:
@@ -1174,7 +1175,7 @@ paths:
         "404":
           description: |-
             大会 {competitionId} が存在しない。
-  "/competitions/{competitionId}/answers":
+  /competitions/{competitionId}/answers:
     parameters:
       - $ref: "#/components/parameters/competitionId"
     get:
@@ -1211,7 +1212,7 @@ paths:
         "404":
           description: |-
             大会 {competitionId} が存在しない。
-  "/competitions/{competitionId}/participants":
+  /competitions/{competitionId}/participants:
     parameters:
       - $ref: "#/components/parameters/competitionId"
     get:
@@ -1248,7 +1249,7 @@ paths:
         "404":
           description: |-
             大会 {competitionId} が存在しない。
-  "/competitions/{competitionId}/participants/{participantId}":
+  /competitions/{competitionId}/participants/{participantId}:
     parameters:
       - $ref: "#/components/parameters/competitionId"
       - name: participantId
