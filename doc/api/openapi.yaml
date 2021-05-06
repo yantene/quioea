@@ -830,7 +830,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/answerFlag"
+              $ref: "#/components/schemas/Answer"
       responses:
         "201":
           description: |-
@@ -1628,27 +1628,23 @@ components:
         id:
           $ref: "#/components/schemas/answerId"
           readOnly: true
-        createdById:
-          $ref: "#/components/schemas/userId"
-          writeOnly: true
         createdBy:
           $ref: "#/components/schemas/User"
           readOnly: true
-        quizId:
-          $ref: "#/components/schemas/quizId"
-          writeOnly: true
         quiz:
           $ref: "#/components/schemas/Quiz"
           readOnly: true
         count:
           $ref: "#/components/schemas/answerCount"
           readOnly: true
-        correct:
-          $ref: "#/components/schemas/answerCorrect"
-        score:
-          $ref: "#/components/schemas/answerScore"
         flag:
           $ref: "#/components/schemas/answerFlag"
+        correct:
+          $ref: "#/components/schemas/answerCorrect"
+          readOnly: true
+        score:
+          $ref: "#/components/schemas/answerScore"
+          readOnly: true
         createdAt:
           $ref: "#/components/schemas/createdAt"
           readOnly: true
@@ -1675,6 +1671,14 @@ components:
       example: 3
       x-tags:
         - answer
+    answerFlag:
+      type: string
+      title: answerFlag
+      description: |-
+        回答フラグ。
+      example: "ザンパン"
+      x-tags:
+        - answer
     answerCorrect:
       type: boolean
       title: answerCorrect
@@ -1690,12 +1694,6 @@ components:
       description: |-
         この回答によって獲得したスコア。
       example: 0
-      x-tags:
-        - answer
-    answerFlag:
-      type: string
-      title: answerFlag
-      example: "ザンパン"
       x-tags:
         - answer
     Tag:
