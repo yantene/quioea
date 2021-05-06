@@ -52,9 +52,10 @@ CREATE TABLE "Answer" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdById" TEXT NOT NULL,
     "quizId" BIGINT NOT NULL,
-    "correct" BOOLEAN NOT NULL,
+    "resignation" BOOLEAN NOT NULL,
+    "flag" TEXT,
+    "correct" BOOLEAN,
     "score" INTEGER NOT NULL,
-    "flag" TEXT NOT NULL,
 
     PRIMARY KEY ("id")
 );

@@ -99,12 +99,16 @@ model Answer {
   quiz        Quiz   @relation(fields: [quizId], references: [id])
   quizId      BigInt
 
-  /// true ならば正解している
-  correct Boolean
+  /// true ならば投了
+  resignation Boolean
+  /// 回答フラグ
+  /// resignation が true なら NULL。
+  flag        String?
+  /// true ならば正解している。
+  /// resignation が true なら NULL。
+  correct     Boolean?
   /// 獲得点数
-  score   Int
-  /// 回答内容
-  flag    String
+  score       Int
 }
 
 model Tag {
