@@ -1643,13 +1643,13 @@ components:
       x-tags:
         - quiz
     quizPublishedAt:
-      type: integer
-      format: int64
+      type: string
+      format: date-time
       title: quizPublishedAt
       description: |-
-        公開日時。エポックミリ秒。未来の日時のみ指定可能。
+        公開日時。未来の日時のみ指定可能。
         competitionId が指定されている場合、大会開催期間のみ指定可能。
-      example: 1600000000000
+      example: 2021-04-01T09:00:00.000Z
       x-tags:
         - quiz
     quizAnswerCount:
@@ -1843,13 +1843,13 @@ components:
         大会の開催期間。
       properties:
         openAt:
-          type: integer
-          format: int64
-          example: 1600000000000
+          type: string
+          format: date-time
+          example: 2021-04-01T09:00:00.000Z
         closedAt:
-          type: integer
-          format: int64
-          example: 1610000000000
+          type: string
+          format: date-time
+          example: 2021-04-07T09:00:00.000Z
       x-tags:
         - competition
     competitionParticipantsCount:
@@ -1880,22 +1880,22 @@ components:
       x-tags:
         - competition
     createdAt:
-      type: integer
-      format: int64
+      type: string
+      format: date-time
       title: createdAt
       description: |-
-        作成日時。エポックミリ秒。
-      example: 1600000000000
+        作成日時。
+      example: 2021-04-01T09:00:00.000Z
       readOnly: true
       x-tags:
         - common
     updatedAt:
-      type: integer
-      format: int64
+      type: string
+      format: date-time
       title: updatedAt
       description: |-
-        更新日時。エポックミリ秒。
-      example: 1600000000000
+        更新日時。
+      example: 2021-04-01T09:00:00.000Z
       readOnly: true
       x-tags:
         - common
