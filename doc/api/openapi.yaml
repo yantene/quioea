@@ -1353,7 +1353,7 @@ components:
           $ref: "#/components/schemas/userEmail"
         displayName:
           $ref: "#/components/schemas/userDisplayName"
-        pasphrase:
+        passphrase:
           $ref: "#/components/schemas/userPassphrase"
           writeOnly: true
         profile:
