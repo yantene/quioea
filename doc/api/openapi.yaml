@@ -169,6 +169,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
     post:
       summary: ユーザを作成する。
+      tags:
+        - user
       operationId: postUsers
       responses:
         "201":
@@ -486,6 +488,8 @@ paths:
       summary: グループを作成する。
       description: |-
         グループを作成する。
+      tags:
+        - group
       operationId: postGroups
       responses:
         "201":
