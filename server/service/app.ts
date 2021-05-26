@@ -8,17 +8,22 @@ import {
   API_JWT_SECRET,
   API_BASE_PATH,
   API_UPLOAD_DIR,
+  API_SESSION_COOKIE_NAME,
 } from "$/service/envValues"
 import server from "$/$server"
 
 export const init = (serverFactory?: FastifyServerFactory) => {
   const app = Fastify({ serverFactory })
+
   app.register(helmet)
+
   app.register(cors)
+
   app.register(fastifyStatic, {
     root: path.join(__dirname, "static"),
     prefix: "/static/",
   })
+
   if (API_UPLOAD_DIR) {
     app.after(() => {
       app.register(fastifyStatic, {
@@ -28,13 +33,15 @@ export const init = (serverFactory?: FastifyServerFactory) => {
       })
     })
   }
+
   app.register(fastifyJwt, {
     secret: API_JWT_SECRET,
-    // cookie: {
-    //   cookieName: "SESSIONID",
-    //   signed: true,
-    // },
+    cookie: {
+      cookieName: API_SESSION_COOKIE_NAME,
+      signed: true,
+    },
   })
+
   server(app, { basePath: API_BASE_PATH })
   return app
 }
