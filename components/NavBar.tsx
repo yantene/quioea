@@ -6,10 +6,8 @@ import {
   createStyles,
   IconButton,
   makeStyles,
-  StylesProvider,
   Theme,
   Toolbar,
-  Typography,
 } from "@material-ui/core"
 import * as Icons from "@material-ui/icons"
 

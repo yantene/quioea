@@ -28,7 +28,13 @@ export const init = (serverFactory?: FastifyServerFactory) => {
       })
     })
   }
-  app.register(fastifyJwt, { secret: API_JWT_SECRET })
+  app.register(fastifyJwt, {
+    secret: API_JWT_SECRET,
+    // cookie: {
+    //   cookieName: "SESSIONID",
+    //   signed: true,
+    // },
+  })
   server(app, { basePath: API_BASE_PATH })
   return app
 }
